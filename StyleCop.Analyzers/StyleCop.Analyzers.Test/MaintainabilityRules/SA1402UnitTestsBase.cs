@@ -12,56 +12,48 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
     using TestHelper;
     using Xunit;
 
-    public class SA1402UnitTests : FileMayOnlyContainTestBase
+    public abstract class SA1402UnitTestsBase : FileMayOnlyContainTestBase
     {
-        public override string Keyword
-        {
-            get
-            {
-                return "class";
-            }
-        }
-
         public override bool SupportsCodeFix => true;
 
         [Fact]
-        public async Task TestPartialClassesAsync()
+        public async Task TestPartialTypesAsync()
         {
-            var testCode = @"public partial class Foo
-{
-}
-public partial class Foo
-{
+            var testCode = $@"public partial {this.Keyword} Foo
+{{
+}}
+public partial {this.Keyword} Foo
+{{
 
-}";
+}}";
 
             await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
-        public async Task TestDifferentPartialClassesAsync()
+        public async Task TestDifferentPartialTypesAsync()
         {
-            var testCode = @"public partial class Foo
-{
-}
-public partial class Bar
-{
+            var testCode = $@"public partial {this.Keyword} Foo
+{{
+}}
+public partial {this.Keyword} Bar
+{{
 
-}";
+}}";
 
             var fixedCode = new[]
             {
-                @"public partial class Foo
-{
-}
+                $@"public partial {this.Keyword} Foo
+{{
+}}
 ",
-                @"public partial class Bar
-{
+                $@"public partial {this.Keyword} Bar
+{{
 
-}"
+}}"
             };
 
-            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(4, 22);
+            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(4, 17 + this.Keyword.Length);
 
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
             await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
@@ -69,27 +61,27 @@ public partial class Bar
         }
 
         [Fact]
-        public async Task TestPreferFilenameClassAsync()
+        public async Task TestPreferFilenameTypeAsync()
         {
-            var testCode = @"public class Foo
-{
-}
-public class Test0
-{
-}";
+            var testCode = $@"public {this.Keyword} Foo
+{{
+}}
+public {this.Keyword} Test0
+{{
+}}";
 
             var fixedCode = new[]
             {
-                @"public class Test0
-{
-}",
-                @"public class Foo
-{
-}
+                $@"public {this.Keyword} Test0
+{{
+}}",
+                $@"public {this.Keyword} Foo
+{{
+}}
 "
             };
 
-            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(1, 14);
+            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(1, 9 + this.Keyword.Length);
 
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
             await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
@@ -97,17 +89,31 @@ public class Test0
         }
 
         [Fact]
-        public async Task TestNestedClassesAsync()
+        public async Task TestNestedTypesAsync()
         {
-            var testCode = @"public class Foo
-{
-    public class Bar
-    {
+            var testCode = $@"public class Foo
+{{
+    public {this.Keyword} Bar
+    {{
     
-    }
-}";
+    }}
+}}";
 
             await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        protected override string GetSettings()
+        {
+            var settings = $@"
+{{
+  ""settings"": {{
+    ""maintainabilityRules"": {{
+      ""topLevelTypes"": [""{this.Keyword}""]
+    }}
+  }}
+}}";
+
+            return settings;
         }
 
         protected override IEnumerable<DiagnosticAnalyzer> GetCSharpDiagnosticAnalyzers()

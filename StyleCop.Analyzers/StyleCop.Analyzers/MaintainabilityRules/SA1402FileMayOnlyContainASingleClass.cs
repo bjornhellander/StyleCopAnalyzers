@@ -4,6 +4,7 @@
 namespace StyleCop.Analyzers.MaintainabilityRules
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Linq;
     using Microsoft.CodeAnalysis;
@@ -14,7 +15,7 @@ namespace StyleCop.Analyzers.MaintainabilityRules
     using StyleCop.Analyzers.Helpers;
 
     /// <summary>
-    /// A C# code file contains more than one unique class.
+    /// A C# code file contains more than one unique type.
     /// </summary>
     /// <remarks>
     /// <para>A violation of this rule occurs when a C# file contains more than one class. To increase long-term
@@ -33,9 +34,9 @@ namespace StyleCop.Analyzers.MaintainabilityRules
         /// The ID for diagnostics produced by the <see cref="SA1402FileMayOnlyContainASingleClass"/> analyzer.
         /// </summary>
         public const string DiagnosticId = "SA1402";
-        private const string Title = "File may only contain a single class";
-        private const string MessageFormat = "File may only contain a single class";
-        private const string Description = "A C# code file contains more than one unique class.";
+        private const string Title = "File may only contain a single type";
+        private const string MessageFormat = "File may only contain a single type";
+        private const string Description = "A C# code file contains more than one unique type.";
         private const string HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1402.md";
 
         private static readonly DiagnosticDescriptor Descriptor =
@@ -60,39 +61,75 @@ namespace StyleCop.Analyzers.MaintainabilityRules
         {
             var syntaxRoot = context.Tree.GetRoot(context.CancellationToken);
 
-            var descentNodes = syntaxRoot.DescendantNodes(descendIntoChildren: node => node != null && !node.IsKind(SyntaxKind.ClassDeclaration));
-            var classNodes = from descentNode in descentNodes
-                                where descentNode.IsKind(SyntaxKind.ClassDeclaration)
-                                select descentNode as ClassDeclarationSyntax;
+            var typeNodes = GetTypeDeclarations(syntaxRoot, settings);
 
             string suffix;
             var fileName = FileNameHelpers.GetFileNameAndSuffix(context.Tree.FilePath, out suffix);
-            var preferredClassNode = classNodes.FirstOrDefault(n => FileNameHelpers.GetConventionalFileName(n, settings.DocumentationRules.FileNamingConvention) == fileName) ?? classNodes.FirstOrDefault();
+            var preferredTypeNode = typeNodes.FirstOrDefault(n => FileNameHelpers.GetConventionalFileName(n, settings.DocumentationRules.FileNamingConvention) == fileName) ?? typeNodes.FirstOrDefault();
 
-            if (preferredClassNode == null)
+            if (preferredTypeNode == null)
             {
                 return;
             }
 
-            string foundClassName = null;
-            bool isPartialClass = false;
+            string foundTypeName = null;
+            bool isPartialType = false;
 
-            foundClassName = preferredClassNode.Identifier.Text;
-            isPartialClass = preferredClassNode.Modifiers.Any(SyntaxKind.PartialKeyword);
+            foundTypeName = preferredTypeNode.Identifier.Text;
+            isPartialType = preferredTypeNode.Modifiers.Any(SyntaxKind.PartialKeyword);
 
-            foreach (var classNode in classNodes)
+            foreach (var typeNode in typeNodes)
             {
-                if (classNode == preferredClassNode || (isPartialClass && foundClassName == classNode.Identifier.Text))
+                if (typeNode == preferredTypeNode || (isPartialType && foundTypeName == typeNode.Identifier.Text))
                 {
                     continue;
                 }
 
-                var location = NamedTypeHelpers.GetNameOrIdentifierLocation(classNode);
+                var location = NamedTypeHelpers.GetNameOrIdentifierLocation(typeNode);
                 if (location != null)
                 {
                     context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
                 }
             }
+        }
+
+        private static IEnumerable<TypeDeclarationSyntax> GetTypeDeclarations(SyntaxNode root, StyleCopSettings settings)
+        {
+            var typeDeclarations = root.DescendantNodes(descendIntoChildren: node => ContainsTypeDeclarations(node)).OfType<TypeDeclarationSyntax>().ToList();
+            var relevantTypeDeclarations = typeDeclarations.Where(x => IsRelevantType(x, settings)).ToList();
+            return relevantTypeDeclarations;
+        }
+
+        private static bool ContainsTypeDeclarations(SyntaxNode node)
+        {
+            return node.IsKind(SyntaxKind.CompilationUnit) || node.IsKind(SyntaxKind.NamespaceDeclaration);
+        }
+
+        private static bool IsRelevantType(SyntaxNode node, StyleCopSettings settings)
+        {
+            var topLevelTypes = settings.MaintainabilityRules.TopLevelTypes;
+            var isRelevant = false;
+
+            switch (node.Kind())
+            {
+                case SyntaxKind.ClassDeclaration:
+                    isRelevant = topLevelTypes.Contains(TopLevelType.Class);
+                    break;
+                case SyntaxKind.InterfaceDeclaration:
+                    isRelevant = topLevelTypes.Contains(TopLevelType.Interface);
+                    break;
+                case SyntaxKind.StructDeclaration:
+                    isRelevant = topLevelTypes.Contains(TopLevelType.Struct);
+                    break;
+                case SyntaxKind.EnumDeclaration:
+                    isRelevant = topLevelTypes.Contains(TopLevelType.Enum);
+                    break;
+                case SyntaxKind.DelegateDeclaration:
+                    isRelevant = topLevelTypes.Contains(TopLevelType.Delegate);
+                    break;
+            }
+
+            return isRelevant;
         }
     }
 }

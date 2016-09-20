@@ -243,7 +243,10 @@
     <Compile Include="MaintainabilityRules\SA1119UnitTests.cs" />
     <Compile Include="MaintainabilityRules\SA1400UnitTests.cs" />
     <Compile Include="MaintainabilityRules\SA1401UnitTests.cs" />
-    <Compile Include="MaintainabilityRules\SA1402UnitTests.cs" />
+    <Compile Include="MaintainabilityRules\SA1402ForStructUnitTests.cs" />
+    <Compile Include="MaintainabilityRules\SA1402ForInterfaceUnitTests.cs" />
+    <Compile Include="MaintainabilityRules\SA1402ForClassUnitTests.cs" />
+    <Compile Include="MaintainabilityRules\SA1402UnitTestsBase.cs" />
     <Compile Include="MaintainabilityRules\SA1403UnitTests.cs" />
     <Compile Include="MaintainabilityRules\SA1404UnitTests.cs" />
     <Compile Include="MaintainabilityRules\SA1405UnitTests.cs" />
