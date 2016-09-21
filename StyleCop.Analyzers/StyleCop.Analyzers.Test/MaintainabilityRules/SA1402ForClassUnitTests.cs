@@ -3,14 +3,8 @@
 
 namespace StyleCop.Analyzers.Test.MaintainabilityRules
 {
-    public class SA1402ForClassUnitTests : SA1402UnitTestsBase
+    public class SA1402ForClassUnitTests : SA1402ForBlockDeclarationUnitTestsBase
     {
-        public override string Keyword
-        {
-            get
-            {
-                return "class";
-            }
-        }
+        public override string Keyword => "class";
     }
 }
