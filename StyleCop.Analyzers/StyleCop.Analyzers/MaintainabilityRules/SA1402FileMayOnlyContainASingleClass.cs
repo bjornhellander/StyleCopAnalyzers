@@ -18,14 +18,14 @@ namespace StyleCop.Analyzers.MaintainabilityRules
     /// A C# code file contains more than one unique type.
     /// </summary>
     /// <remarks>
-    /// <para>A violation of this rule occurs when a C# file contains more than one class. To increase long-term
-    /// maintainability of the code-base, each class should be placed in its own file, and file names should reflect the
-    /// name of the class within the file.</para>
+    /// <para>A violation of this rule occurs when a C# file contains more than one type. To increase long-term
+    /// maintainability of the code-base, each type should be placed in its own file, and file names should reflect the
+    /// name of the type within the file.</para>
     ///
-    /// <para>It is possible to place other supporting elements within the same file as the class, such as delegates,
-    /// enums, etc., if they are related to the class.</para>
+    /// <para>It is possible to configure which kind of types this rule should affect.
+    /// By default, it allows delegates, enums, structs and interfaces to be placed together with a class.</para>
     ///
-    /// <para>It is also possible to place multiple parts of the same partial class within the same file.</para>
+    /// <para>It is also possible to place multiple parts of the same partial type within the same file.</para>
     /// </remarks>
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     internal class SA1402FileMayOnlyContainASingleClass : DiagnosticAnalyzer
