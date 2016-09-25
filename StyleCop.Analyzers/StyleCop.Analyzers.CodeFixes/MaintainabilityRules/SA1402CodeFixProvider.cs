@@ -56,32 +56,14 @@ namespace StyleCop.Analyzers.MaintainabilityRules
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             SyntaxNode node = root.FindNode(diagnostic.Location.SourceSpan, getInnermostNodeForTie: true);
-            BaseTypeDeclarationSyntax baseTypeDeclarationSyntax = node as BaseTypeDeclarationSyntax;
-            DelegateDeclarationSyntax delegateDeclarationSyntax = node as DelegateDeclarationSyntax;
-            if (baseTypeDeclarationSyntax == null && delegateDeclarationSyntax == null)
+            var memberDeclarationSyntax = node as MemberDeclarationSyntax;
+            if (memberDeclarationSyntax == null)
             {
                 return document.Project.Solution;
             }
 
             DocumentId extractedDocumentId = DocumentId.CreateNewId(document.Project.Id);
-            string extractedDocumentName = baseTypeDeclarationSyntax.Identifier.ValueText;
-            if (baseTypeDeclarationSyntax != null)
-            {
-                TypeDeclarationSyntax typeDeclarationSyntax = baseTypeDeclarationSyntax as TypeDeclarationSyntax;
-                if (typeDeclarationSyntax?.TypeParameterList?.Parameters.Count > 0)
-                {
-                    extractedDocumentName += "`" + typeDeclarationSyntax.TypeParameterList.Parameters.Count;
-                }
-            }
-            else
-            {
-                if (delegateDeclarationSyntax.TypeParameterList?.Parameters.Count > 0)
-                {
-                    extractedDocumentName += "`" + delegateDeclarationSyntax.TypeParameterList.Parameters.Count;
-                }
-            }
-
-            extractedDocumentName += ".cs";
+            string extractedDocumentName = FileNameHelpers.GetConventionalFileName(memberDeclarationSyntax, Settings.ObjectModel.FileNamingConvention.Metadata) + ".cs";
 
             List<SyntaxNode> nodesToRemoveFromExtracted = new List<SyntaxNode>();
             SyntaxNode previous = node;

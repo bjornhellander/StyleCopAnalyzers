@@ -23,21 +23,23 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
         [Fact]
         public override async Task TestTwoElementsAsync()
         {
-            var testCode = @"
-public delegate void Foo();
+            var testCode = @"public delegate void Foo();
 
-public delegate void Bar();";
+public delegate void Bar();
+";
 
             var fixedCode = new[]
             {
-                @"
-public delegate void Foo();",
+                @"public delegate void Foo();
+",
 
+                // There should be no leading whitespace here... Why are there?
                 @"
-public delegate void Bar();"
+public delegate void Bar();
+"
             };
 
-            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(4, this.Keyword.Length + 2);
+            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(3, 22);
 
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
             await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
@@ -47,29 +49,33 @@ public delegate void Bar();"
         [Fact]
         public override async Task TestThreeElementsAsync()
         {
-            var testCode = @"
-public delegate void Foo();
+            var testCode = @"public delegate void Foo();
 
 public delegate void Bar();
 
-public delegate void FooBar();";
+public delegate void FooBar();
+";
 
             var fixedCode = new[]
             {
-                @"
-public delegate void Foo();",
+                @"public delegate void Foo();
+",
 
+                // There should be no leading whitespace here... Why are there?
                 @"
-public delegate void Bar();",
+public delegate void Bar();
+",
 
+                // There should be no leading whitespace here... Why are there?
                 @"
-public delegate void FooBar();"
+public delegate void FooBar();
+"
             };
 
             DiagnosticResult[] expected =
             {
-                this.CSharpDiagnostic().WithLocation(4, this.Keyword.Length + 2),
-                this.CSharpDiagnostic().WithLocation(7, this.Keyword.Length + 2)
+                this.CSharpDiagnostic().WithLocation(3, 22),
+                this.CSharpDiagnostic().WithLocation(5, 22)
             };
 
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
@@ -80,21 +86,23 @@ public delegate void FooBar();"
         [Fact]
         public override async Task TestPreferFilenameTypeAsync()
         {
-            var testCode = @"
-public delegate void Foo();
+            var testCode = @"public delegate void Foo();
 
-public delegate void Test0();";
+public delegate void Test0();
+";
 
             var fixedCode = new[]
             {
+                // There should be no leading whitespace here... Why are there?
                 $@"
-public delegate void Test0();",
+public delegate void Test0();
+",
 
-                $@"
-public delegate void Foo();"
+                $@"public delegate void Foo();
+"
             };
 
-            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(1, 9 + this.Keyword.Length);
+            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(1, 22);
 
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
             await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);

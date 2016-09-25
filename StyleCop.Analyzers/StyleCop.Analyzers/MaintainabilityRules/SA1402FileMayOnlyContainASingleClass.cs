@@ -72,15 +72,12 @@ namespace StyleCop.Analyzers.MaintainabilityRules
                 return;
             }
 
-            string foundTypeName = null;
-            bool isPartialType = false;
-
-            foundTypeName = preferredTypeNode.Identifier.Text;
-            isPartialType = preferredTypeNode.Modifiers.Any(SyntaxKind.PartialKeyword);
+            var foundTypeName = NamedTypeHelpers.GetNameOrIdentifier(preferredTypeNode);
+            var isPartialType = NamedTypeHelpers.IsPartialDeclaration(preferredTypeNode);
 
             foreach (var typeNode in typeNodes)
             {
-                if (typeNode == preferredTypeNode || (isPartialType && foundTypeName == typeNode.Identifier.Text))
+                if (typeNode == preferredTypeNode || (isPartialType && foundTypeName == NamedTypeHelpers.GetNameOrIdentifier(typeNode)))
                 {
                     continue;
                 }
@@ -93,9 +90,9 @@ namespace StyleCop.Analyzers.MaintainabilityRules
             }
         }
 
-        private static IEnumerable<TypeDeclarationSyntax> GetTypeDeclarations(SyntaxNode root, StyleCopSettings settings)
+        private static IEnumerable<MemberDeclarationSyntax> GetTypeDeclarations(SyntaxNode root, StyleCopSettings settings)
         {
-            var typeDeclarations = root.DescendantNodes(descendIntoChildren: node => ContainsTypeDeclarations(node)).OfType<TypeDeclarationSyntax>().ToList();
+            var typeDeclarations = root.DescendantNodes(descendIntoChildren: node => ContainsTypeDeclarations(node)).OfType<MemberDeclarationSyntax>().ToList();
             var relevantTypeDeclarations = typeDeclarations.Where(x => IsRelevantType(x, settings)).ToList();
             return relevantTypeDeclarations;
         }

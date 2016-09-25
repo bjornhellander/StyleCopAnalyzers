@@ -15,11 +15,11 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
         [Fact]
         public override async Task TestOneElementAsync()
         {
-            var testCode = @"
-enum Foo
+            var testCode = @"enum Foo
 {
     A, B, C
-}";
+}
+";
 
             await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
@@ -27,8 +27,7 @@ enum Foo
         [Fact]
         public override async Task TestTwoElementsAsync()
         {
-            var testCode = @"
-enum Foo
+            var testCode = @"enum Foo
 {
     A, B, C
 }
@@ -36,23 +35,27 @@ enum Foo
 enum Bar
 {
     D, E
-}";
+}
+";
 
             var fixedCode = new[]
             {
-                @"
-enum Foo
+                @"enum Foo
 {
     A, B, C
-}",
+}
+",
+
+                // There should be no leading whitespace here... Why are there?
                 @"
 enum Bar
 {
     D, E
-}"
+}
+"
             };
 
-            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(4, this.Keyword.Length + 2);
+            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(6, 6);
 
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
             await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
@@ -62,8 +65,7 @@ enum Bar
         [Fact]
         public override async Task TestThreeElementsAsync()
         {
-            var testCode = @"
-enum For
+            var testCode = @"enum Foo
 {
     A, B, C
 }
@@ -73,36 +75,41 @@ enum Bar
     D, E
 }
 
-enum ForBar
+enum FooBar
 {
     F, G, H
-}";
+}
+";
 
             var fixedCode = new[]
             {
-                @"
-enum Foo
+                @"enum Foo
 {
     A, B, C
 }
 ",
+
+                // There should be no leading whitespace here... Why are there?
                 @"
 enum Bar
 {
     D, E
 }
 ",
+
+                // There should be no leading whitespace here... Why are there?
                 @"
 enum FooBar
 {
     F, G, H
-}"
+}
+"
             };
 
             DiagnosticResult[] expected =
             {
-                this.CSharpDiagnostic().WithLocation(4, this.Keyword.Length + 2),
-                this.CSharpDiagnostic().WithLocation(7, this.Keyword.Length + 2)
+                this.CSharpDiagnostic().WithLocation(6, 6),
+                this.CSharpDiagnostic().WithLocation(11, 6)
             };
 
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
@@ -113,8 +120,7 @@ enum FooBar
         [Fact]
         public override async Task TestPreferFilenameTypeAsync()
         {
-            var testCode = @"
-enum Foo
+            var testCode = @"enum Foo
 {
     A, B, C
 }
@@ -122,23 +128,26 @@ enum Foo
 enum Test0
 {
     D, E
-}";
+}
+";
 
             var fixedCode = new[]
             {
+                // There should be no leading whitespace here... Why are there?
                 @"
 enum Test0
 {
-    A, B, C
-}",
-                @"
-enum Foo
-{
     D, E
-}"
+}
+",
+                @"enum Foo
+{
+    A, B, C
+}
+"
             };
 
-            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(4, this.Keyword.Length + 2);
+            DiagnosticResult expected = this.CSharpDiagnostic().WithLocation(1, 6);
 
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
             await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
