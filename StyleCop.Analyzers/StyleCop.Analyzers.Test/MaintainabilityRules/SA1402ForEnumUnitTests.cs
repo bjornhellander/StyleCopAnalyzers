@@ -65,7 +65,7 @@ enum Bar
         [Fact]
         public async Task TestTwoElementsWithRuleDisabledAsync()
         {
-            this.DisableRule = true;
+            this.ConfigureAsNonTopLevelType = true;
 
             var testCode = @"enum Foo
 {

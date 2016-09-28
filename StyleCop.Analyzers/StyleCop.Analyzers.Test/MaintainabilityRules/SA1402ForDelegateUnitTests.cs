@@ -49,7 +49,7 @@ public delegate void Bar();
         [Fact]
         public async Task TestTwoElementsWithRuleDisabledAsync()
         {
-            this.DisableRule = true;
+            this.ConfigureAsNonTopLevelType = true;
 
             var testCode = @"public delegate void Foo();
 

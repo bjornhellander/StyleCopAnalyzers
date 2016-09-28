@@ -17,12 +17,12 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
     {
         public override bool SupportsCodeFix => true;
 
-        private bool DisableRule { get; set; } = false;
+        private bool ConfigureAsNonTopLevelType { get; set; } = false;
 
         [Fact]
         public async Task TestTwoElementsWithRuleDisabledAsync()
         {
-            this.DisableRule = true;
+            this.ConfigureAsNonTopLevelType = true;
 
             var testCode = @"%1 Foo
 {
@@ -125,7 +125,7 @@ public {this.Keyword} Test0
         protected override string GetSettings()
         {
             var keywords = new List<string> { "class", "interface", "struct", "enum", "delegate" };
-            if (this.DisableRule)
+            if (this.ConfigureAsNonTopLevelType)
             {
                 keywords.Remove(this.Keyword);
             }

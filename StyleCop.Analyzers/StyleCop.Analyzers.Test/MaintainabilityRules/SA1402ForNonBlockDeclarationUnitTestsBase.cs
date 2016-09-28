@@ -14,12 +14,12 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
     {
         public abstract string Keyword { get; }
 
-        protected bool DisableRule { get; set; } = false;
+        protected bool ConfigureAsNonTopLevelType { get; set; } = false;
 
         protected override string GetSettings()
         {
             var keywords = new List<string> { "class", "interface", "struct", "enum", "delegate" };
-            if (this.DisableRule)
+            if (this.ConfigureAsNonTopLevelType)
             {
                 keywords.Remove(this.Keyword);
             }
