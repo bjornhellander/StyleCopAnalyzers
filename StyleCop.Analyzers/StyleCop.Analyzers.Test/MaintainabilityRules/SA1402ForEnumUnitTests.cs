@@ -13,7 +13,7 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
         public override string Keyword => "enum";
 
         [Fact]
-        public override async Task TestOneElementAsync()
+        public async Task TestOneElementAsync()
         {
             var testCode = @"enum Foo
 {
@@ -25,7 +25,7 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
         }
 
         [Fact]
-        public override async Task TestTwoElementsAsync()
+        public async Task TestTwoElementsAsync()
         {
             var testCode = @"enum Foo
 {
@@ -63,7 +63,7 @@ enum Bar
         }
 
         [Fact]
-        public override async Task TestTwoElementsWithRuleDisabledAsync()
+        public async Task TestTwoElementsWithRuleDisabledAsync()
         {
             this.DisableRule = true;
 
@@ -82,7 +82,7 @@ enum Bar
         }
 
         [Fact]
-        public override async Task TestThreeElementsAsync()
+        public async Task TestThreeElementsAsync()
         {
             var testCode = @"enum Foo
 {
@@ -137,7 +137,7 @@ enum FooBar
         }
 
         [Fact]
-        public override async Task TestPreferFilenameTypeAsync()
+        public async Task TestPreferFilenameTypeAsync()
         {
             var testCode = @"enum Foo
 {

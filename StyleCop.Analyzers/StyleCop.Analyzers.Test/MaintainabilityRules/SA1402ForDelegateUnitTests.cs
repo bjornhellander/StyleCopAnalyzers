@@ -13,7 +13,7 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
         public override string Keyword => "delegate";
 
         [Fact]
-        public override async Task TestOneElementAsync()
+        public async Task TestOneElementAsync()
         {
             var testCode = @"public delegate void Foo();";
 
@@ -21,7 +21,7 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
         }
 
         [Fact]
-        public override async Task TestTwoElementsAsync()
+        public async Task TestTwoElementsAsync()
         {
             var testCode = @"public delegate void Foo();
 
@@ -47,7 +47,7 @@ public delegate void Bar();
         }
 
         [Fact]
-        public override async Task TestTwoElementsWithRuleDisabledAsync()
+        public async Task TestTwoElementsWithRuleDisabledAsync()
         {
             this.DisableRule = true;
 
@@ -60,7 +60,7 @@ public delegate void Bar();
         }
 
         [Fact]
-        public override async Task TestThreeElementsAsync()
+        public async Task TestThreeElementsAsync()
         {
             var testCode = @"public delegate void Foo();
 
@@ -97,7 +97,7 @@ public delegate void FooBar();
         }
 
         [Fact]
-        public override async Task TestPreferFilenameTypeAsync()
+        public async Task TestPreferFilenameTypeAsync()
         {
             var testCode = @"public delegate void Foo();
 

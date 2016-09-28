@@ -19,8 +19,6 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
 
         public override bool SupportsCodeFix => false;
 
-        public override bool SupportsDisabling => false;
-
         [Fact]
         public async Task TestNestedNamespacesAsync()
         {

@@ -5,7 +5,6 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
 {
     using System.Collections.Generic;
     using System.Linq;
-    using System.Threading.Tasks;
     using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.Diagnostics;
     using StyleCop.Analyzers.MaintainabilityRules;
@@ -16,16 +15,6 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
         public abstract string Keyword { get; }
 
         protected bool DisableRule { get; set; } = false;
-
-        public abstract Task TestOneElementAsync();
-
-        public abstract Task TestTwoElementsAsync();
-
-        public abstract Task TestTwoElementsWithRuleDisabledAsync();
-
-        public abstract Task TestThreeElementsAsync();
-
-        public abstract Task TestPreferFilenameTypeAsync();
 
         protected override string GetSettings()
         {

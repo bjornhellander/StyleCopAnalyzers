@@ -17,7 +17,24 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
     {
         public override bool SupportsCodeFix => true;
 
-        public override bool SupportsDisabling => true;
+        private bool DisableRule { get; set; } = false;
+
+        [Fact]
+        public async Task TestTwoElementsWithRuleDisabledAsync()
+        {
+            this.DisableRule = true;
+
+            var testCode = @"%1 Foo
+{
+}
+%1 Bar
+{
+}";
+
+            testCode = testCode.Replace("%1", this.Keyword);
+
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+        }
 
         [Fact]
         public async Task TestPartialTypesAsync()

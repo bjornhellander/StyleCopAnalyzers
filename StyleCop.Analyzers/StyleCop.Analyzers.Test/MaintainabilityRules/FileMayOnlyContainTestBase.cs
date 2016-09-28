@@ -15,10 +15,6 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
 
         public abstract bool SupportsCodeFix { get; }
 
-        public abstract bool SupportsDisabling { get; }
-
-        protected bool DisableRule { get; private set; } = false;
-
         [Fact]
         public async Task TestOneElementAsync()
         {
@@ -64,28 +60,6 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
             {
                 await this.VerifyCSharpFixAsync(new[] { testCode }, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
             }
-        }
-
-        [Fact]
-        public async Task TestTwoElementsWithRuleDisabledAsync()
-        {
-            if (!this.SupportsDisabling)
-            {
-                return;
-            }
-
-            this.DisableRule = true;
-
-            var testCode = @"%1 Foo
-{
-}
-%1 Bar
-{
-}";
-
-            testCode = testCode.Replace("%1", this.Keyword);
-
-            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
