@@ -4,19 +4,24 @@
 namespace StyleCop.Analyzers.Test.MaintainabilityRules
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.Diagnostics;
     using StyleCop.Analyzers.MaintainabilityRules;
     using TestHelper;
 
-    public abstract class SA1402ForNonBlockDeclarationUnitTestsBaseUnitTestsBase : CodeFixVerifier
+    public abstract class SA1402ForNonBlockDeclarationUnitTestsBase : CodeFixVerifier
     {
         public abstract string Keyword { get; }
+
+        protected bool DisableRule { get; set; } = false;
 
         public abstract Task TestOneElementAsync();
 
         public abstract Task TestTwoElementsAsync();
+
+        public abstract Task TestTwoElementsWithRuleDisabledAsync();
 
         public abstract Task TestThreeElementsAsync();
 
@@ -24,11 +29,19 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
 
         protected override string GetSettings()
         {
+            var keywords = new List<string> { "class", "interface", "struct", "enum", "delegate" };
+            if (this.DisableRule)
+            {
+                keywords.Remove(this.Keyword);
+            }
+
+            var keywordsStr = string.Join(", ", keywords.Select(x => "\"" + x + "\""));
+
             var settings = $@"
 {{
   ""settings"": {{
     ""maintainabilityRules"": {{
-      ""topLevelTypes"": [""{this.Keyword}""]
+      ""topLevelTypes"": [{keywordsStr}]
     }}
   }}
 }}";

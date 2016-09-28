@@ -4,6 +4,7 @@
 namespace StyleCop.Analyzers.Test.MaintainabilityRules
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Analyzers.MaintainabilityRules;
@@ -15,6 +16,8 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
     public abstract class SA1402ForBlockDeclarationUnitTestsBase : FileMayOnlyContainTestBase
     {
         public override bool SupportsCodeFix => true;
+
+        public override bool SupportsDisabling => true;
 
         [Fact]
         public async Task TestPartialTypesAsync()
@@ -104,11 +107,19 @@ public {this.Keyword} Test0
 
         protected override string GetSettings()
         {
+            var keywords = new List<string> { "class", "interface", "struct", "enum", "delegate" };
+            if (this.DisableRule)
+            {
+                keywords.Remove(this.Keyword);
+            }
+
+            var keywordsStr = string.Join(", ", keywords.Select(x => "\"" + x + "\""));
+
             var settings = $@"
 {{
   ""settings"": {{
     ""maintainabilityRules"": {{
-      ""topLevelTypes"": [""{this.Keyword}""]
+      ""topLevelTypes"": [{keywordsStr}]
     }}
   }}
 }}";

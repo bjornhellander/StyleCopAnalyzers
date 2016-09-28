@@ -8,7 +8,7 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
     using TestHelper;
     using Xunit;
 
-    public class SA1402ForEnumUnitTests : SA1402ForNonBlockDeclarationUnitTestsBaseUnitTestsBase
+    public class SA1402ForEnumUnitTests : SA1402ForNonBlockDeclarationUnitTestsBase
     {
         public override string Keyword => "enum";
 
@@ -60,6 +60,25 @@ enum Bar
             await this.VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
             await this.VerifyCSharpDiagnosticAsync(fixedCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
             await this.VerifyCSharpFixAsync(new[] { testCode }, fixedCode, cancellationToken: CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public override async Task TestTwoElementsWithRuleDisabledAsync()
+        {
+            this.DisableRule = true;
+
+            var testCode = @"enum Foo
+{
+    A, B, C
+}
+
+enum Bar
+{
+    D, E
+}
+";
+
+            await this.VerifyCSharpDiagnosticAsync(testCode, EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
