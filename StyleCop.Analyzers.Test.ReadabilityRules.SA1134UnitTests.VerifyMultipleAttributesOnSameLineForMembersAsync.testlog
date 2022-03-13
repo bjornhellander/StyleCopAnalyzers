@@ -1,0 +1,84 @@
+﻿ StyleCop.Analyzers.Test.ReadabilityRules.SA1134UnitTests.VerifyMultipleAttributesOnSameLineForMembersAsync
+   Source: SA1134UnitTests.cs line 246
+   Duration: 724 ms
+
+  Message: 
+    System.InvalidOperationException : Failed to merge all changes:
+    Old:TextChange: { [163..319), "
+            [DesignOnly(true)]
+            public TestClass() { }" } TextChange: { [411..432), "int TestField;" } TextChange: { [524..552), "void TestMethod() {" } TextChange: { [650..650), "TestProperty { get; set; }
+    
+            [EditorBrowsable(EditorBrowsableState.Never)][DesignOnly(true)]
+            public int " }
+    Index:0
+    New:
+    Curr:TextChange: { [270..270), "
+            " }
+    
+
+  Stack Trace: 
+    <TryAddDocumentMergeChangesAsync>d__14.MoveNext() line 433
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    ConfiguredTaskAwaiter.GetResult()
+    <<TryMergeFixesAsync>b__1>d.MoveNext() line 355
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    ConfiguredTaskAwaiter.GetResult()
+    <TryMergeFixesAsync>d__13.MoveNext() line 372
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    ConfiguredTaskAwaiter.GetResult()
+    <TryGetMergedFixAsync>d__9.MoveNext() line 194
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    ConfiguredTaskAwaiter.GetResult()
+    <GetFixAsync>d__5.MoveNext() line 71
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    ConfiguredTaskAwaiter.GetResult()
+    <GetFixAsync>d__4.MoveNext() line 35
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    ConfiguredTaskAwaiter.GetResult()
+    <FixAllAnalyerDiagnosticsInScopeAsync>d__52.MoveNext() line 767
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    ConfiguredTaskAwaiter.GetResult()
+    <VerifyFixAsync>d__46.MoveNext() line 462
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    ConfiguredTaskAwaiter.GetResult()
+    <VerifyFixAsync>d__44.MoveNext() line 430
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    ConfiguredTaskAwaiter.GetResult()
+    <RunImplAsync>d__42.MoveNext() line 274
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    TaskAwaiter.GetResult()
+    <RunAsync>d__62.MoveNext() line 180
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    ConfiguredTaskAwaiter.GetResult()
+    <VerifyMultipleAttributesOnSameLineForMembersAsync>d__6.MoveNext() line 320
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+    --- End of stack trace from previous location where exception was thrown ---
+    TaskAwaiter.ThrowForNonSuccess(Task task)
+    TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)

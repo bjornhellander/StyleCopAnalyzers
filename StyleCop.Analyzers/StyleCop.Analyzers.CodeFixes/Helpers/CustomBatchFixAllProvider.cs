@@ -84,6 +84,16 @@ namespace StyleCop.Analyzers.Helpers
             var fixerTasks = new Task[diagnostics.Length];
             var fixes = new List<CodeAction>[diagnostics.Length];
 
+            //for (var i = 1; i < diagnostics.Length - 1; i++)
+            //{
+            //    var areInNotOrder = diagnostics[i - 1].Location.SourceSpan.CompareTo(diagnostics[i].Location.SourceSpan) >= 0;
+            //    var overlaps = diagnostics[i - 1].Location.SourceSpan.OverlapsWith(diagnostics[i].Location.SourceSpan);
+            //    if (areInNotOrder || overlaps)
+            //    {
+            //        throw new InvalidOperationException($"Invalid diagnostics: Index {i}, Order: {areInNotOrder}, Overlaps: {overlaps}");
+            //    }
+            //}
+
             for (var i = 0; i < diagnostics.Length; i++)
             {
                 int currentFixIndex = i;
@@ -253,13 +263,15 @@ namespace StyleCop.Analyzers.Helpers
                 {
                     if (!(operation is ApplyChangesOperation applyChangesOperation))
                     {
-                        continue;
+                        throw new InvalidOperationException("Found invalid operation!");
+                        //continue;
                     }
 
                     if (singleApplyChangesOperation != null)
                     {
                         // Already had an ApplyChangesOperation; only one is supported.
-                        singleApplyChangesOperation = null;
+                        throw new InvalidOperationException("Found more than one valid operation!");
+                        //singleApplyChangesOperation = null;
                         break;
                     }
 
@@ -268,7 +280,8 @@ namespace StyleCop.Analyzers.Helpers
 
                 if (singleApplyChangesOperation == null)
                 {
-                    continue;
+                    throw new InvalidOperationException("Did not find any valid operation!");
+                    //continue;
                 }
 
                 var changedSolution = singleApplyChangesOperation.ChangedSolution;
@@ -350,7 +363,11 @@ namespace StyleCop.Analyzers.Helpers
 
                         var oldText = await oldDocument.GetTextAsync(cancellationToken).ConfigureAwait(false);
                         var newText = oldText.WithChanges(appliedChanges);
-                        mergedDocuments.TryAdd(documentId, newText);
+                        var addOk = mergedDocuments.TryAdd(documentId, newText);
+                        if (!addOk)
+                        {
+                            throw new InvalidOperationException("Failed to add document!");
+                        }
                     });
                 }
 
@@ -385,7 +402,8 @@ namespace StyleCop.Analyzers.Helpers
             var successfullyMergedChanges = new List<TextChange>();
 
             int cumulativeChangeIndex = 0;
-            foreach (var change in await newDocument.GetTextChangesAsync(oldDocument, cancellationToken).ConfigureAwait(false))
+            var changes = (await newDocument.GetTextChangesAsync(oldDocument, cancellationToken).ConfigureAwait(false)).ToList();
+            foreach (var change in changes)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 while (cumulativeChangeIndex < cumulativeChanges.Count && cumulativeChanges[cumulativeChangeIndex].Span.End < change.Span.Start)
@@ -412,7 +430,15 @@ namespace StyleCop.Analyzers.Helpers
                             // The current change in consideration overlaps an existing change but
                             // the changes are not identical.
                             // Bail out merge efforts and return the original 'cumulativeChanges'.
-                            return cumulativeChanges;
+                            var cumulativeChangesText = string.Join("\n", cumulativeChanges.Select(x => x.ToString()));
+                            var successfullyMergedChangesText = string.Join("\n", successfullyMergedChanges.Select(x => x.ToString()));
+                            var message = $"Failed to merge all changes:\nOld:{cumulativeChangesText}\nIndex:{cumulativeChangeIndex}\nNew:{successfullyMergedChangesText}\nCurr:{change}\n";
+
+                            //var changesTexts = changes.Select((x, i) => $"Change {i}: {x}\n").ToList();
+                            //var message = $"Failed to merge all changes:\n{string.Join("\n", changesTexts)}";
+
+                            throw new InvalidOperationException(message);
+                            //return cumulativeChanges;
                         }
                         else
                         {
