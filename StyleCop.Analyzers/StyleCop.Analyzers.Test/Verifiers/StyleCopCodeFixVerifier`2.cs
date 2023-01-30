@@ -94,6 +94,7 @@ namespace StyleCop.Analyzers.Test.Verifiers
             private const int DefaultIndentationSize = 4;
             private const int DefaultTabSize = 4;
             private const bool DefaultUseTabs = false;
+            private const string DefaultNewLine = "\r\n";
 
             static CSharpTest()
             {
@@ -119,7 +120,8 @@ namespace StyleCop.Analyzers.Test.Verifiers
                     options
                     .WithChangedOption(FormattingOptions.IndentationSize, this.Language, this.IndentationSize)
                     .WithChangedOption(FormattingOptions.TabSize, this.Language, this.TabSize)
-                    .WithChangedOption(FormattingOptions.UseTabs, this.Language, this.UseTabs));
+                    .WithChangedOption(FormattingOptions.UseTabs, this.Language, this.UseTabs)
+                    .WithChangedOption(FormattingOptions.NewLine, this.Language, this.NewLine));
 
                 this.TestState.AdditionalFilesFactories.Add(GenerateSettingsFile);
                 this.CodeActionValidationMode = CodeActionValidationMode.None;
@@ -218,6 +220,14 @@ namespace StyleCop.Analyzers.Test.Verifiers
             /// The value of the <see cref="FormattingOptions.TabSize"/> to apply to the test workspace.
             /// </value>
             public int TabSize { get; set; } = DefaultTabSize;
+
+            /// <summary>
+            /// Gets or sets the value of the <see cref="FormattingOptions.NewLine"/> to apply to the test workspace.
+            /// </summary>
+            /// <value>
+            /// The value of the <see cref="FormattingOptions.NewLine"/> to apply to the test workspace.
+            /// </value>
+            public string NewLine { get; set; } = DefaultNewLine;
 
             /// <summary>
             /// Gets or sets the content of the settings file to use.

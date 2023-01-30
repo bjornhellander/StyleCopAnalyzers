@@ -74,6 +74,48 @@ namespace Foo
             await VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode, CancellationToken.None).ConfigureAwait(false);
         }
 
+        [Fact]
+        public async Task TestMixedProblemWithCarriageReturnLinefeedNewlineAsync()
+        {
+            var testCode = "namespace Foo {}\r\n";
+
+            var fixedCode = "// Copyright (c) FooCorp. All rights reserved.\r\n// Licensed under the ??? license. See LICENSE file in the project root for full license information.\r\n\r\nnamespace Foo {}\r\n";
+
+            var test = new StyleCopCodeFixVerifier<FileHeaderAnalyzers, FileHeaderCodeFixProvider>.CSharpTest
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+                Settings = TestSettings,
+                NewLine = "\r\n",
+            };
+
+            test.TestBehaviors |= TestBehaviors.SkipSuppressionCheck;
+            var expectedDiagnostic = Diagnostic(FileHeaderAnalyzers.SA1633DescriptorMissing).WithLocation(1, 1);
+            test.ExpectedDiagnostics.Add(expectedDiagnostic);
+            await test.RunAsync(CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        public async Task TestMixedProblemWithLinefeedNewlineAsync()
+        {
+            var testCode = "namespace Foo {}\n";
+
+            var fixedCode = "// Copyright (c) FooCorp. All rights reserved.\n// Licensed under the ??? license. See LICENSE file in the project root for full license information.\n\nnamespace Foo {}\n";
+
+            var test = new StyleCopCodeFixVerifier<FileHeaderAnalyzers, FileHeaderCodeFixProvider>.CSharpTest
+            {
+                TestCode = testCode,
+                FixedCode = fixedCode,
+                Settings = TestSettings,
+                NewLine = "\n",
+            };
+
+            test.TestBehaviors |= TestBehaviors.SkipSuppressionCheck;
+            var expectedDiagnostic = Diagnostic(FileHeaderAnalyzers.SA1633DescriptorMissing).WithLocation(1, 1);
+            test.ExpectedDiagnostics.Add(expectedDiagnostic);
+            await test.RunAsync(CancellationToken.None).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Verifies that the analyzer will report <see cref="FileHeaderAnalyzers.SA1633DescriptorMissing"/> for
         /// projects not using XML headers when the file is completely missing a header.

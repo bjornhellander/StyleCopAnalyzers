@@ -385,8 +385,11 @@ namespace StyleCop.Analyzers.DocumentationRules
             {
                 // make sure that both \n and \r\n are accepted from the settings.
                 string fileName = Path.GetFileName(context.Tree.FilePath);
-                var reformattedCopyrightTextParts = documentationSettings.GetCopyrightText(fileName).Replace("\r\n", "\n").Split('\n');
-                var fileHeaderCopyrightTextParts = copyrightText.Replace("\r\n", "\n").Split('\n');
+                string v1 = documentationSettings.GetCopyrightText(fileName);
+                string v2 = v1.Replace("\r\n", "\n");
+                var reformattedCopyrightTextParts = v2.Split('\n');
+                string v3 = copyrightText.Replace("\r\n", "\n");
+                var fileHeaderCopyrightTextParts = v3.Split('\n');
 
                 if (reformattedCopyrightTextParts.Length != fileHeaderCopyrightTextParts.Length)
                 {
