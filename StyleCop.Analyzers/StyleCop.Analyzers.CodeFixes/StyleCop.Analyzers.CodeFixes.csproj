@@ -65,9 +65,7 @@
   </Target>
 
   <Target Name="PackMetadata" AfterTargets="Pack" Condition="'$(MetadataPackage)' != 'true'">
-    <MSBuild Projects="$(MSBuildProjectFullPath)"
-             Targets="Pack"
-             Properties="MetadataPackage=true;IncludeSymbols=false" />
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Pack" Properties="MetadataPackage=true;IncludeSymbols=false" />
   </Target>
 
 </Project>

@@ -15,6 +15,7 @@ namespace StyleCop.Analyzers.Helpers
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
     using Microsoft.CodeAnalysis.Rename;
+    using StyleCop.Analyzers.CodeFixes.Lightup;
     using StyleCop.Analyzers.Lightup;
 
     internal static class RenameHelper
@@ -22,23 +23,37 @@ namespace StyleCop.Analyzers.Helpers
         public static async Task<Solution> RenameDocumentAsync(Document document, string newFileName, CancellationToken cancellationToken)
         {
             var solution = document.Project.Solution;
-            var newPath = document.FilePath != null ? Path.Combine(Path.GetDirectoryName(document.FilePath), newFileName) : null;
 
-            var newDocumentId = DocumentId.CreateNewId(document.Id.ProjectId);
-
-            var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-            var newSolution = solution
-                .RemoveDocument(document.Id)
-                .AddDocument(newDocumentId, newFileName, syntaxRoot, document.Folders, newPath);
-
-            // Make sure to also add the file to linked projects
-            foreach (var linkedDocumentId in document.GetLinkedDocumentIds())
+            if (RenamerExtensions.SupportsRenameDocument && RenameDocumentActionSetWrapper.SupportsUpdateSolution)
             {
-                DocumentId linkedExtractedDocumentId = DocumentId.CreateNewId(linkedDocumentId.ProjectId);
-                newSolution = newSolution.AddDocument(linkedExtractedDocumentId, newFileName, syntaxRoot, document.Folders);
+                var actions = await RenamerExtensions.RenameDocumentAsync(
+                    document,
+                    newFileName,
+                    newDocumentFolders: null,
+                    cancellationToken).ConfigureAwait(false);
+                var newSolution = await actions.UpdateSolutionAsync(solution, cancellationToken).ConfigureAwait(false);
+                return newSolution;
             }
+            else
+            {
+                var newPath = document.FilePath != null ? Path.Combine(Path.GetDirectoryName(document.FilePath), newFileName) : null;
 
-            return newSolution;
+                var newDocumentId = DocumentId.CreateNewId(document.Id.ProjectId);
+
+                var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+                var newSolution = solution
+                    .RemoveDocument(document.Id)
+                    .AddDocument(newDocumentId, newFileName, syntaxRoot, document.Folders, newPath);
+
+                // Make sure to also add the file to linked projects
+                foreach (var linkedDocumentId in document.GetLinkedDocumentIds())
+                {
+                    DocumentId linkedExtractedDocumentId = DocumentId.CreateNewId(linkedDocumentId.ProjectId);
+                    newSolution = newSolution.AddDocument(linkedExtractedDocumentId, newFileName, syntaxRoot, document.Folders);
+                }
+
+                return newSolution;
+            }
         }
 
         public static async Task<Solution> RenameSymbolAsync(Document document, SyntaxNode root, SyntaxToken declarationToken, string newName, CancellationToken cancellationToken)
