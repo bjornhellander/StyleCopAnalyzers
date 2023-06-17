@@ -6,6 +6,7 @@
 namespace StyleCop.Analyzers.Helpers
 {
     using System.Collections.Immutable;
+    using System.IO;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -18,6 +19,28 @@ namespace StyleCop.Analyzers.Helpers
 
     internal static class RenameHelper
     {
+        public static async Task<Solution> RenameDocumentAsync(Document document, string newFileName, CancellationToken cancellationToken)
+        {
+            var solution = document.Project.Solution;
+            var newPath = document.FilePath != null ? Path.Combine(Path.GetDirectoryName(document.FilePath), newFileName) : null;
+
+            var newDocumentId = DocumentId.CreateNewId(document.Id.ProjectId);
+
+            var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var newSolution = solution
+                .RemoveDocument(document.Id)
+                .AddDocument(newDocumentId, newFileName, syntaxRoot, document.Folders, newPath);
+
+            // Make sure to also add the file to linked projects
+            foreach (var linkedDocumentId in document.GetLinkedDocumentIds())
+            {
+                DocumentId linkedExtractedDocumentId = DocumentId.CreateNewId(linkedDocumentId.ProjectId);
+                newSolution = newSolution.AddDocument(linkedExtractedDocumentId, newFileName, syntaxRoot, document.Folders);
+            }
+
+            return newSolution;
+        }
+
         public static async Task<Solution> RenameSymbolAsync(Document document, SyntaxNode root, SyntaxToken declarationToken, string newName, CancellationToken cancellationToken)
         {
             var annotatedRoot = root.ReplaceToken(declarationToken, declarationToken.WithAdditionalAnnotations(RenameAnnotation.Create()));

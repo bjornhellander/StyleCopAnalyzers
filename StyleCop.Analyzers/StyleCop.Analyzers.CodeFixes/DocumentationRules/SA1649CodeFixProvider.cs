@@ -7,7 +7,6 @@ namespace StyleCop.Analyzers.DocumentationRules
 {
     using System.Collections.Immutable;
     using System.Composition;
-    using System.IO;
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
@@ -51,25 +50,8 @@ namespace StyleCop.Analyzers.DocumentationRules
 
         private static async Task<Solution> GetTransformedSolutionAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
-            var solution = document.Project.Solution;
-            var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
-
             var expectedFileName = diagnostic.Properties[SA1649FileNameMustMatchTypeName.ExpectedFileNameKey];
-            var newPath = document.FilePath != null ? Path.Combine(Path.GetDirectoryName(document.FilePath), expectedFileName) : null;
-
-            var newDocumentId = DocumentId.CreateNewId(document.Id.ProjectId);
-
-            var newSolution = solution
-                .RemoveDocument(document.Id)
-                .AddDocument(newDocumentId, expectedFileName, syntaxRoot, document.Folders, newPath);
-
-            // Make sure to also add the file to linked projects
-            foreach (var linkedDocumentId in document.GetLinkedDocumentIds())
-            {
-                DocumentId linkedExtractedDocumentId = DocumentId.CreateNewId(linkedDocumentId.ProjectId);
-                newSolution = newSolution.AddDocument(linkedExtractedDocumentId, expectedFileName, syntaxRoot, document.Folders);
-            }
-
+            var newSolution = await RenameHelper.RenameDocumentAsync(document, expectedFileName, cancellationToken).ConfigureAwait(false);
             return newSolution;
         }
     }
