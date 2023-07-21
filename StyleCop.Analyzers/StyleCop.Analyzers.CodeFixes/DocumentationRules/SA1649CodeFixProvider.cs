@@ -66,6 +66,7 @@ namespace StyleCop.Analyzers.DocumentationRules
             // Make sure to also add the file to linked projects
             foreach (var linkedDocumentId in document.GetLinkedDocumentIds())
             {
+                newSolution = newSolution.RemoveDocument(linkedDocumentId);
                 DocumentId linkedExtractedDocumentId = DocumentId.CreateNewId(linkedDocumentId.ProjectId);
                 newSolution = newSolution.AddDocument(linkedExtractedDocumentId, expectedFileName, syntaxRoot, document.Folders);
             }

@@ -487,6 +487,98 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
             await VerifyCSharpDiagnosticAsync("Class1.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
         }
 
+        [Fact]
+        [WorkItem(1693, "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/1693")]
+        public async Task VerifyWithLinkedFileInAdditionalProjectAsync()
+        {
+            var testCode = "public class [|Type1|] { }";
+
+            await new StyleCopCodeFixVerifier<SA1649FileNameMustMatchTypeName, SA1649CodeFixProvider>.CSharpTest()
+            {
+                TestState =
+                {
+                    Sources =
+                    {
+                        ("/0/TestFile.cs", testCode), // NOTE: Normal file "owned" by the project
+                    },
+                    AdditionalProjects =
+                    {
+                        ["Project2"] =
+                        {
+                            Sources =
+                            {
+                                ("/0/TestFile.cs", testCode), // NOTE: Equivalent to a link
+                            },
+                        },
+                    },
+                },
+                FixedState =
+                {
+                    Sources =
+                    {
+                        ("/0/Type1.cs", testCode), // NOTE: Normal file "owned" by the project
+                    },
+                    AdditionalProjects =
+                    {
+                        ["Project2"] =
+                        {
+                            Sources =
+                            {
+                                ("Type1.cs", testCode), // TODO: Not desirable, but a separate issue (#1665)
+                            },
+                        },
+                    },
+                },
+                TestBehaviors = TestBehaviors.SkipSuppressionCheck,
+            }.RunAsync().ConfigureAwait(false);
+        }
+
+        [Fact]
+        [WorkItem(1693, "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/1693")]
+        public async Task VerifyWithLinkedFileInPrimaryProjectAsync()
+        {
+            var testCode = "public class [|Type1|] { }";
+
+            await new StyleCopCodeFixVerifier<SA1649FileNameMustMatchTypeName, SA1649CodeFixProvider>.CSharpTest()
+            {
+                TestState =
+                {
+                    Sources =
+                    {
+                        ("/Project2/TestFile.cs", testCode), // NOTE: Equivalent to a link
+                    },
+                    AdditionalProjects =
+                    {
+                        ["Project2"] =
+                        {
+                            Sources =
+                            {
+                                ("/Project2/TestFile.cs", testCode), // NOTE: Normal file "owned" by the project
+                            },
+                        },
+                    },
+                },
+                FixedState =
+                {
+                    Sources =
+                    {
+                        ("Type1.cs", testCode), // TODO: Not desirable, but a separate issue (#1665)
+                    },
+                    AdditionalProjects =
+                    {
+                        ["Project2"] =
+                        {
+                            Sources =
+                            {
+                                ("/Project2/Type1.cs", testCode), // NOTE: Normal file "owned" by the project
+                            },
+                        },
+                    },
+                },
+                TestBehaviors = TestBehaviors.SkipSuppressionCheck,
+            }.RunAsync().ConfigureAwait(false);
+        }
+
         protected static string GetTypeDeclaration(string typeKind, string typeName, int? diagnosticKey = null)
         {
             if (diagnosticKey is not null)
