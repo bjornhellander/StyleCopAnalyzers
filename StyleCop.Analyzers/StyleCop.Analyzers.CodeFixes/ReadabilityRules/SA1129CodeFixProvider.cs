@@ -13,7 +13,6 @@ namespace StyleCop.Analyzers.ReadabilityRules
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeActions;
     using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -26,45 +25,42 @@ namespace StyleCop.Analyzers.ReadabilityRules
     /// </summary>
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SA1129CodeFixProvider))]
     [Shared]
-    internal class SA1129CodeFixProvider : CodeFixProvider
+    internal class SA1129CodeFixProvider : SimpleSyntaxNodeBasedCodeFixProvider<SyntaxNode, Tuple<Project, SemanticModel>>
     {
+        /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(SA1129DoNotUseDefaultValueTypeConstructor.DiagnosticId);
 
         /// <inheritdoc/>
-        public override FixAllProvider GetFixAllProvider()
-        {
-            return FixAll.Instance;
-        }
+        protected override string CodeActionTitle => ReadabilityResources.SA1129CodeFix;
 
-        public override Task RegisterCodeFixesAsync(CodeFixContext context)
+        /// <inheritdoc/>
+        protected override async Task<Tuple<Project, SemanticModel>> CreateContextAsync(
+            Document document,
+            SyntaxNode syntaxRoot,
+            CancellationToken cancellationToken)
         {
-            foreach (var diagnostic in context.Diagnostics)
-            {
-                context.RegisterCodeFix(
-                    CodeAction.Create(
-                        ReadabilityResources.SA1129CodeFix,
-                        cancellationToken => GetTransformedDocumentAsync(context.Document, diagnostic, cancellationToken),
-                        nameof(SA1129CodeFixProvider)),
-                    diagnostic);
-            }
-
-            return SpecializedTasks.CompletedTask;
-        }
-
-        private static async Task<Document> GetTransformedDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
-        {
-            var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
-
-            var newExpression = syntaxRoot.FindNode(diagnostic.Location.SourceSpan, getInnermostNodeForTie: true);
-            var newSyntaxRoot = syntaxRoot.ReplaceNode(newExpression, GetReplacementNode(document.Project, newExpression, semanticModel, cancellationToken));
-
-            return document.WithSyntaxRoot(newSyntaxRoot);
+            return Tuple.Create(document.Project, semanticModel);
         }
 
-        private static SyntaxNode GetReplacementNode(Project project, SyntaxNode node, SemanticModel semanticModel, CancellationToken cancellationToken)
+        /// <inheritdoc/>
+        protected override SyntaxNode GetNodeToReplace(Diagnostic diagnostic, SyntaxNode syntaxRoot)
         {
+            var newExpression = syntaxRoot.FindNode(diagnostic.Location.SourceSpan, getInnermostNodeForTie: true);
+            return newExpression;
+        }
+
+        /// <inheritdoc/>
+        protected override SyntaxNode GetReplacementNode(
+            Diagnostic diagnostic,
+            SyntaxNode node,
+            Tuple<Project, SemanticModel> context,
+            CancellationToken cancellationToken)
+        {
+            var project = context.Item1;
+            var semanticModel = context.Item2;
+
             var newExpression = (BaseObjectCreationExpressionSyntaxWrapper)node;
 
             var symbolInfo = semanticModel.GetSymbolInfo(newExpression, cancellationToken);
@@ -223,30 +219,6 @@ namespace StyleCop.Analyzers.ReadabilityRules
                 SyntaxKind.SimpleMemberAccessExpression,
                 typeSyntax,
                 SyntaxFactory.IdentifierName(memberName));
-        }
-
-        private class FixAll : DocumentBasedFixAllProvider
-        {
-            public static FixAllProvider Instance { get; } =
-                new FixAll();
-
-            protected override string CodeActionTitle =>
-                ReadabilityResources.SA1129CodeFix;
-
-            protected override async Task<SyntaxNode> FixAllInDocumentAsync(FixAllContext fixAllContext, Document document, ImmutableArray<Diagnostic> diagnostics)
-            {
-                if (diagnostics.IsEmpty)
-                {
-                    return null;
-                }
-
-                var syntaxRoot = await document.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-                var semanticModel = await document.GetSemanticModelAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-
-                var nodes = diagnostics.Select(diagnostic => syntaxRoot.FindNode(diagnostic.Location.SourceSpan, getInnermostNodeForTie: true));
-
-                return syntaxRoot.ReplaceNodes(nodes, (originalNode, rewrittenNode) => GetReplacementNode(document.Project, rewrittenNode, semanticModel, fixAllContext.CancellationToken));
-            }
         }
     }
 }

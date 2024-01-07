@@ -1,17 +1,13 @@
 ﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#nullable disable
-
 namespace StyleCop.Analyzers.DocumentationRules
 {
     using System.Collections.Immutable;
     using System.Composition;
     using System.Linq;
     using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeActions;
     using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -22,7 +18,7 @@ namespace StyleCop.Analyzers.DocumentationRules
     /// </summary>
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(PropertySummaryDocumentationCodeFixProvider))]
     [Shared]
-    internal class PropertySummaryDocumentationCodeFixProvider : CodeFixProvider
+    internal class PropertySummaryDocumentationCodeFixProvider : SimpleSyntaxNodeBasedCodeFixProvider<XmlTextSyntax>
     {
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
@@ -31,44 +27,31 @@ namespace StyleCop.Analyzers.DocumentationRules
                 PropertySummaryDocumentationAnalyzer.SA1624Descriptor.Id);
 
         /// <inheritdoc/>
-        public override FixAllProvider GetFixAllProvider()
-        {
-            return CustomFixAllProviders.BatchFixer;
-        }
+        protected override string CodeActionTitle => DocumentationResources.PropertySummaryStartTextCodeFix;
 
         /// <inheritdoc/>
-        public override Task RegisterCodeFixesAsync(CodeFixContext context)
+        protected override XmlTextSyntax? GetNodeToReplace(Diagnostic diagnostic, SyntaxNode syntaxRoot)
         {
-            foreach (Diagnostic diagnostic in context.Diagnostics)
+            if (diagnostic.Properties.ContainsKey(PropertySummaryDocumentationAnalyzer.NoCodeFixKey))
             {
-                if (!diagnostic.Properties.ContainsKey(PropertySummaryDocumentationAnalyzer.NoCodeFixKey))
-                {
-                    context.RegisterCodeFix(
-                        CodeAction.Create(
-                            DocumentationResources.PropertySummaryStartTextCodeFix,
-                            cancellationToken => GetTransformedDocumentAsync(context.Document, diagnostic, cancellationToken),
-                            nameof(PropertySummaryDocumentationCodeFixProvider)),
-                        diagnostic);
-                }
+                return null;
             }
-
-            return SpecializedTasks.CompletedTask;
-        }
-
-        private static async Task<Document> GetTransformedDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
-        {
-            var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
             var node = syntaxRoot.FindNode(diagnostic.Location.SourceSpan);
             var documentation = node.GetDocumentationCommentTriviaSyntax();
 
             var summaryElement = (XmlElementSyntax)documentation.Content.GetFirstXmlElement(XmlCommentHelper.SummaryXmlTag);
             var textElement = XmlCommentHelper.TryGetFirstTextElementWithContent(summaryElement);
-            if (textElement == null)
-            {
-                return document;
-            }
+            return textElement;
+        }
 
+        /// <inheritdoc/>
+        protected override SyntaxNode GetReplacementNode(
+            Diagnostic diagnostic,
+            XmlTextSyntax textElement,
+            object context,
+            CancellationToken cancellationToken)
+        {
             var textToken = textElement.TextTokens.First(token => token.IsKind(SyntaxKind.XmlTextLiteralToken));
             var text = textToken.ValueText;
 
@@ -106,11 +89,7 @@ namespace StyleCop.Analyzers.DocumentationRules
             var newXmlTextLiteral = SyntaxFactory.XmlTextLiteral(textToken.LeadingTrivia, newText, newText, textToken.TrailingTrivia);
             var newTextTokens = textElement.TextTokens.Replace(textToken, newXmlTextLiteral);
             var newTextElement = textElement.WithTextTokens(newTextTokens);
-
-            var newSyntaxRoot = syntaxRoot.ReplaceNode(textElement, newTextElement);
-            var newDocument = document.WithSyntaxRoot(newSyntaxRoot);
-
-            return newDocument;
+            return newTextElement;
         }
     }
 }

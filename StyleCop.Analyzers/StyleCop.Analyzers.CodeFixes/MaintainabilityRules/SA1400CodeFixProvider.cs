@@ -8,9 +8,8 @@ namespace StyleCop.Analyzers.MaintainabilityRules
     using System;
     using System.Collections.Immutable;
     using System.Composition;
-    using System.Threading.Tasks;
+    using System.Threading;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeActions;
     using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -25,46 +24,34 @@ namespace StyleCop.Analyzers.MaintainabilityRules
     /// </remarks>
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SA1400CodeFixProvider))]
     [Shared]
-    internal class SA1400CodeFixProvider : CodeFixProvider
+    internal class SA1400CodeFixProvider : SimpleSyntaxNodeBasedCodeFixProvider<SyntaxNode>
     {
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(SA1400AccessModifierMustBeDeclared.DiagnosticId);
 
         /// <inheritdoc/>
-        public override FixAllProvider GetFixAllProvider()
+        protected override string CodeActionTitle => MaintainabilityResources.SA1400CodeFix;
+
+        /// <inheritdoc/>
+        protected override SyntaxNode GetNodeToReplace(Diagnostic diagnostic, SyntaxNode syntaxRoot)
         {
-            return CustomFixAllProviders.BatchFixer;
+            SyntaxNode node = syntaxRoot.FindNode(diagnostic.Location.SourceSpan, getInnermostNodeForTie: true);
+            if (node == null || node.IsMissing)
+            {
+                return null;
+            }
+
+            SyntaxNode declarationNode = FindParentDeclarationNode(node);
+            return declarationNode;
         }
 
         /// <inheritdoc/>
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
-        {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-            foreach (var diagnostic in context.Diagnostics)
-            {
-                SyntaxNode node = root.FindNode(diagnostic.Location.SourceSpan, getInnermostNodeForTie: true);
-                if (node == null || node.IsMissing)
-                {
-                    continue;
-                }
-
-                SyntaxNode declarationNode = FindParentDeclarationNode(node);
-                if (declarationNode == null)
-                {
-                    continue;
-                }
-
-                context.RegisterCodeFix(
-                    CodeAction.Create(
-                        MaintainabilityResources.SA1400CodeFix,
-                        cancellationToken => GetTransformedDocumentAsync(context.Document, root, declarationNode),
-                        nameof(SA1400CodeFixProvider)),
-                    diagnostic);
-            }
-        }
-
-        private static Task<Document> GetTransformedDocumentAsync(Document document, SyntaxNode root, SyntaxNode declarationNode)
+        protected override SyntaxNode GetReplacementNode(
+            Diagnostic diagnostic,
+            SyntaxNode declarationNode,
+            object context,
+            CancellationToken cancellationToken)
         {
             SyntaxNode updatedDeclarationNode;
             switch (declarationNode.Kind())
@@ -134,8 +121,7 @@ namespace StyleCop.Analyzers.MaintainabilityRules
                 throw new InvalidOperationException("Unhandled declaration kind: " + declarationNode.Kind());
             }
 
-            var newSyntaxRoot = root.ReplaceNode(declarationNode, updatedDeclarationNode);
-            return Task.FromResult(document.WithSyntaxRoot(newSyntaxRoot));
+            return updatedDeclarationNode;
         }
 
         private static SyntaxNode HandleClassDeclaration(ClassDeclarationSyntax node)

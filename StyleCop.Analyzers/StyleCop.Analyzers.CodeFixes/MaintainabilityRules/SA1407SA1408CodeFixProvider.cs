@@ -1,15 +1,12 @@
 ﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#nullable disable
-
 namespace StyleCop.Analyzers.MaintainabilityRules
 {
     using System.Collections.Immutable;
     using System.Composition;
-    using System.Threading.Tasks;
+    using System.Threading;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeActions;
     using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -23,7 +20,7 @@ namespace StyleCop.Analyzers.MaintainabilityRules
     /// </remarks>
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SA1407SA1408CodeFixProvider))]
     [Shared]
-    internal class SA1407SA1408CodeFixProvider : CodeFixProvider
+    internal class SA1407SA1408CodeFixProvider : SimpleSyntaxNodeBasedCodeFixProvider<BinaryExpressionSyntax>
     {
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
@@ -32,45 +29,25 @@ namespace StyleCop.Analyzers.MaintainabilityRules
                 SA1408ConditionalExpressionsMustDeclarePrecedence.DiagnosticId);
 
         /// <inheritdoc/>
-        public override FixAllProvider GetFixAllProvider()
+        protected override string CodeActionTitle => MaintainabilityResources.SA1407SA1408CodeFix;
+
+        /// <inheritdoc/>
+        protected override BinaryExpressionSyntax? GetNodeToReplace(Diagnostic diagnostic, SyntaxNode syntaxRoot)
         {
-            return new SA1407SA1408FixAllProvider();
+            var node = syntaxRoot.FindNode(diagnostic.Location.SourceSpan) as BinaryExpressionSyntax;
+            return node != null && !node.IsMissing ? node : null;
         }
 
         /// <inheritdoc/>
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        protected override SyntaxNode GetReplacementNode(
+            Diagnostic diagnostic,
+            BinaryExpressionSyntax originalNode,
+            object context,
+            CancellationToken cancellationToken)
         {
-            var root = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-            foreach (var diagnostic in context.Diagnostics)
-            {
-                SyntaxNode node = root.FindNode(diagnostic.Location.SourceSpan);
-                if (node.IsMissing)
-                {
-                    continue;
-                }
-
-                if (node is BinaryExpressionSyntax syntax)
-                {
-                    context.RegisterCodeFix(
-                        CodeAction.Create(
-                            MaintainabilityResources.SA1407SA1408CodeFix,
-                            cancellationToken => GetTransformedDocumentAsync(context.Document, root, syntax),
-                            nameof(SA1407SA1408CodeFixProvider)),
-                        diagnostic);
-                }
-            }
-        }
-
-        private static Task<Document> GetTransformedDocumentAsync(Document document, SyntaxNode root, BinaryExpressionSyntax syntax)
-        {
-            var newNode = SyntaxFactory.ParenthesizedExpression(syntax.WithoutTrivia())
-                .WithTriviaFrom(syntax)
+            return SyntaxFactory.ParenthesizedExpression(originalNode.WithoutTrivia())
+                .WithTriviaFrom(originalNode)
                 .WithoutFormatting();
-
-            var newSyntaxRoot = root.ReplaceNode(syntax, newNode);
-
-            return Task.FromResult(document.WithSyntaxRoot(newSyntaxRoot));
         }
     }
 }

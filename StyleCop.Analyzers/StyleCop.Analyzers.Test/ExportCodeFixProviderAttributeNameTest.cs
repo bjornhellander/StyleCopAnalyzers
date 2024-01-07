@@ -21,7 +21,7 @@ namespace StyleCop.Analyzers.Test
                 var codeFixProviders = typeof(TokenSpacingCodeFixProvider)
                     .Assembly
                     .GetTypes()
-                    .Where(t => typeof(CodeFixProvider).IsAssignableFrom(t));
+                    .Where(t => typeof(CodeFixProvider).IsAssignableFrom(t) && !t.IsAbstract);
 
                 return codeFixProviders.Select(x => new[] { x });
             }

@@ -1,17 +1,12 @@
 ﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#nullable disable
-
 namespace StyleCop.Analyzers.LayoutRules
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Composition;
     using System.Threading;
-    using System.Threading.Tasks;
     using Microsoft.CodeAnalysis;
-    using Microsoft.CodeAnalysis.CodeActions;
     using Microsoft.CodeAnalysis.CodeFixes;
     using Microsoft.CodeAnalysis.CSharp;
     using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -25,52 +20,41 @@ namespace StyleCop.Analyzers.LayoutRules
     /// </remarks>
     [ExportCodeFixProvider(LanguageNames.CSharp, Name = nameof(SA1503CodeFixProvider))]
     [Shared]
-    internal class SA1503CodeFixProvider : CodeFixProvider
+    internal class SA1503CodeFixProvider : SimpleSyntaxNodeBasedCodeFixProvider<StatementSyntax>
     {
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(SA1503BracesMustNotBeOmitted.DiagnosticId, SA1519BracesMustNotBeOmittedFromMultiLineChildStatement.DiagnosticId, SA1520UseBracesConsistently.DiagnosticId);
 
         /// <inheritdoc/>
-        public override FixAllProvider GetFixAllProvider()
+        protected override string CodeActionTitle => LayoutResources.SA1503CodeFix;
+
+        /// <inheritdoc/>
+        protected override StatementSyntax? GetNodeToReplace(Diagnostic diagnostic, SyntaxNode syntaxRoot)
         {
-            return FixAll.Instance;
+            var node = syntaxRoot.FindNode(diagnostic.Location.SourceSpan, false, true) as StatementSyntax;
+            if (node is null || node.IsMissing)
+            {
+                return null;
+            }
+
+            // If the parent of the statement contains a conditional directive, stuff will be really hard to fix correctly, so don't offer a code fix.
+            if (ContainsConditionalDirectiveTrivia(node.Parent))
+            {
+                return null;
+            }
+
+            return node;
         }
 
         /// <inheritdoc/>
-        public override async Task RegisterCodeFixesAsync(CodeFixContext context)
+        protected override SyntaxNode GetReplacementNode(
+            Diagnostic diagnostic,
+            StatementSyntax node,
+            object context,
+            CancellationToken cancellationToken)
         {
-            var syntaxRoot = await context.Document.GetSyntaxRootAsync(context.CancellationToken).ConfigureAwait(false);
-
-            foreach (Diagnostic diagnostic in context.Diagnostics)
-            {
-                if (!(syntaxRoot.FindNode(diagnostic.Location.SourceSpan, false, true) is StatementSyntax node) || node.IsMissing)
-                {
-                    continue;
-                }
-
-                // If the parent of the statement contains a conditional directive, stuff will be really hard to fix correctly, so don't offer a code fix.
-                if (ContainsConditionalDirectiveTrivia(node.Parent))
-                {
-                    continue;
-                }
-
-                context.RegisterCodeFix(
-                    CodeAction.Create(
-                        LayoutResources.SA1503CodeFix,
-                        cancellationToken => GetTransformedDocumentAsync(context.Document, syntaxRoot, node, cancellationToken),
-                        nameof(SA1503CodeFixProvider)),
-                    diagnostic);
-            }
-        }
-
-        private static Task<Document> GetTransformedDocumentAsync(Document document, SyntaxNode root, StatementSyntax node, CancellationToken cancellationToken)
-        {
-            // Currently unused
-            _ = cancellationToken;
-
-            var newSyntaxRoot = root.ReplaceNode(node, SyntaxFactory.Block(node));
-            return Task.FromResult(document.WithSyntaxRoot(newSyntaxRoot));
+            return SyntaxFactory.Block(node);
         }
 
         private static bool ContainsConditionalDirectiveTrivia(SyntaxNode node)
@@ -88,44 +72,6 @@ namespace StyleCop.Analyzers.LayoutRules
             }
 
             return false;
-        }
-
-        private class FixAll : DocumentBasedFixAllProvider
-        {
-            public static FixAllProvider Instance { get; } =
-                new FixAll();
-
-            protected override string CodeActionTitle =>
-                LayoutResources.SA1503CodeFix;
-
-            protected override async Task<SyntaxNode> FixAllInDocumentAsync(FixAllContext fixAllContext, Document document, ImmutableArray<Diagnostic> diagnostics)
-            {
-                if (diagnostics.IsEmpty)
-                {
-                    return null;
-                }
-
-                SyntaxNode syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
-                List<SyntaxNode> nodesNeedingBlocks = new List<SyntaxNode>(diagnostics.Length);
-
-                foreach (Diagnostic diagnostic in diagnostics)
-                {
-                    if (!(syntaxRoot.FindNode(diagnostic.Location.SourceSpan, false, true) is StatementSyntax node) || node.IsMissing)
-                    {
-                        continue;
-                    }
-
-                    // If the parent of the statement contains a conditional directive, stuff will be really hard to fix correctly, so don't offer a code fix.
-                    if (ContainsConditionalDirectiveTrivia(node.Parent))
-                    {
-                        continue;
-                    }
-
-                    nodesNeedingBlocks.Add(node);
-                }
-
-                return syntaxRoot.ReplaceNodes(nodesNeedingBlocks, (originalNode, rewrittenNode) => SyntaxFactory.Block((StatementSyntax)rewrittenNode));
-            }
         }
     }
 }
