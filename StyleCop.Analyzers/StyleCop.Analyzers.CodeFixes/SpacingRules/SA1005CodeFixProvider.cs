@@ -5,7 +5,6 @@
 
 namespace StyleCop.Analyzers.SpacingRules
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Composition;
     using System.Threading;
@@ -28,6 +27,11 @@ namespace StyleCop.Analyzers.SpacingRules
     [Shared]
     internal class SA1005CodeFixProvider : CodeFixProvider
     {
+        private static readonly FixAllProvider FixAllInstance
+            = new DocumentTextChangeBasedFixAllProvider(
+                SpacingResources.SA1005CodeFix,
+                GetTextChange);
+
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(SA1005SingleLineCommentsMustBeginWithSingleSpace.DiagnosticId);
@@ -35,7 +39,7 @@ namespace StyleCop.Analyzers.SpacingRules
         /// <inheritdoc/>
         public override FixAllProvider GetFixAllProvider()
         {
-            return FixAll.Instance;
+            return FixAllInstance;
         }
 
         /// <inheritdoc/>
@@ -48,22 +52,21 @@ namespace StyleCop.Analyzers.SpacingRules
                 context.RegisterCodeFix(
                     CodeAction.Create(
                         SpacingResources.SA1005CodeFix,
-                        cancellationToken => GetTransformedDocumentAsync(context.Document, diagnostic.Location, cancellationToken),
+                        cancellationToken => GetTransformedDocumentAsync(diagnostic, context.Document, cancellationToken),
                         nameof(SA1005CodeFixProvider)),
                     diagnostic);
             }
         }
 
-        private static async Task<Document> GetTransformedDocumentAsync(Document document, Location location, CancellationToken cancellationToken)
+        private static async Task<Document> GetTransformedDocumentAsync(Diagnostic diagnostic, Document document, CancellationToken cancellationToken)
         {
             var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-            var sourceSpan = location.SourceSpan;
-
-            return document.WithText(text.WithChanges(GetTextChange(text, sourceSpan)));
+            return document.WithText(text.WithChanges(GetTextChange(diagnostic, text)));
         }
 
-        private static TextChange GetTextChange(SourceText text, TextSpan sourceSpan)
+        private static TextChange GetTextChange(Diagnostic diagnostic, SourceText text)
         {
+            var sourceSpan = diagnostic.Location.SourceSpan;
             var subText = text.GetSubText(sourceSpan).ToString();
 
             int i = 2;
@@ -76,38 +79,6 @@ namespace StyleCop.Analyzers.SpacingRules
             }
 
             return new TextChange(new TextSpan(sourceSpan.Start + 2, i - 2), " ");
-        }
-
-        private class FixAll : DocumentBasedFixAllProvider
-        {
-            public static FixAllProvider Instance { get; } =
-                new FixAll();
-
-            protected override string CodeActionTitle =>
-                SpacingResources.SA1005CodeFix;
-
-            protected override async Task<SyntaxNode> FixAllInDocumentAsync(FixAllContext fixAllContext, Document document, ImmutableArray<Diagnostic> diagnostics)
-            {
-                if (diagnostics.IsEmpty)
-                {
-                    return null;
-                }
-
-                var text = await document.GetTextAsync().ConfigureAwait(false);
-
-                List<TextChange> changes = new List<TextChange>();
-
-                foreach (var diagnostic in diagnostics)
-                {
-                    var sourceSpan = diagnostic.Location.SourceSpan;
-                    changes.Add(GetTextChange(text, sourceSpan));
-                }
-
-                changes.Sort((left, right) => left.Span.Start.CompareTo(right.Span.Start));
-
-                var tree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
-                return await tree.WithChangedText(text.WithChanges(changes)).GetRootAsync().ConfigureAwait(false);
-            }
         }
     }
 }

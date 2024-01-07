@@ -5,7 +5,6 @@
 
 namespace StyleCop.Analyzers.SpacingRules
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Composition;
     using System.Text;
@@ -26,6 +25,11 @@ namespace StyleCop.Analyzers.SpacingRules
     [Shared]
     internal class SA1027CodeFixProvider : CodeFixProvider
     {
+        private static readonly FixAllProvider FixAllInstance
+            = new DocumentTextChangeBasedFixAllProvider(
+                SpacingResources.SA1027CodeFix,
+                GetTextChange);
+
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(SA1027UseTabsCorrectly.DiagnosticId);
@@ -33,7 +37,7 @@ namespace StyleCop.Analyzers.SpacingRules
         /// <inheritdoc/>
         public override FixAllProvider GetFixAllProvider()
         {
-            return FixAll.Instance;
+            return FixAllInstance;
         }
 
         /// <inheritdoc/>
@@ -57,10 +61,10 @@ namespace StyleCop.Analyzers.SpacingRules
             var syntaxTree = await document.GetSyntaxTreeAsync(cancellationToken).ConfigureAwait(false);
             var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxTree, cancellationToken);
             SourceText sourceText = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-            return document.WithText(sourceText.WithChanges(FixDiagnostic(settings.Indentation, sourceText, diagnostic)));
+            return document.WithText(sourceText.WithChanges(GetTextChange(diagnostic, sourceText, settings)));
         }
 
-        private static TextChange FixDiagnostic(IndentationSettings indentationSettings, SourceText sourceText, Diagnostic diagnostic)
+        private static TextChange GetTextChange(Diagnostic diagnostic, SourceText sourceText, StyleCopSettings settings)
         {
             TextSpan span = diagnostic.Location.SourceSpan;
 
@@ -82,8 +86,8 @@ namespace StyleCop.Analyzers.SpacingRules
                 char c = text[i];
                 if (c == '\t')
                 {
-                    var offsetWithinTabColumn = column % indentationSettings.TabSize;
-                    var tabWidth = indentationSettings.TabSize - offsetWithinTabColumn;
+                    var offsetWithinTabColumn = column % settings.Indentation.TabSize;
+                    var tabWidth = settings.Indentation.TabSize - offsetWithinTabColumn;
 
                     if (i >= span.Start - startLine.Start)
                     {
@@ -112,7 +116,7 @@ namespace StyleCop.Analyzers.SpacingRules
                             if (useTabs)
                             {
                                 // Note that we account for column not yet being incremented
-                                var offsetWithinTabColumn = (column + 1) % indentationSettings.TabSize;
+                                var offsetWithinTabColumn = (column + 1) % settings.Indentation.TabSize;
                                 if (offsetWithinTabColumn == 0)
                                 {
                                     // We reached a tab stop.
@@ -143,37 +147,6 @@ namespace StyleCop.Analyzers.SpacingRules
             }
 
             return new TextChange(span, StringBuilderPool.ReturnAndFree(replacement));
-        }
-
-        private class FixAll : DocumentBasedFixAllProvider
-        {
-            public static FixAllProvider Instance { get; }
-                = new FixAll();
-
-            protected override string CodeActionTitle
-                => SpacingResources.SA1027CodeFix;
-
-            protected override async Task<SyntaxNode> FixAllInDocumentAsync(FixAllContext fixAllContext, Document document, ImmutableArray<Diagnostic> diagnostics)
-            {
-                if (diagnostics.IsEmpty)
-                {
-                    return null;
-                }
-
-                SyntaxTree tree = await document.GetSyntaxTreeAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-                var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, tree, fixAllContext.CancellationToken);
-                SourceText sourceText = await document.GetTextAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-
-                List<TextChange> changes = new List<TextChange>();
-                foreach (var diagnostic in diagnostics)
-                {
-                    changes.Add(FixDiagnostic(settings.Indentation, sourceText, diagnostic));
-                }
-
-                changes.Sort((left, right) => left.Span.Start.CompareTo(right.Span.Start));
-
-                return await tree.WithChangedText(sourceText.WithChanges(changes)).GetRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-            }
         }
     }
 }

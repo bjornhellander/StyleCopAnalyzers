@@ -22,6 +22,11 @@ namespace StyleCop.Analyzers.MaintainabilityRules
     [Shared]
     internal class SA1413CodeFixProvider : CodeFixProvider
     {
+        private static readonly FixAllProvider FixAllInstance
+            = new DocumentTextChangeBasedFixAllProvider(
+                MaintainabilityResources.SA1413CodeFix,
+                GetTextChange);
+
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(SA1413UseTrailingCommasInMultiLineInitializers.DiagnosticId);
@@ -29,7 +34,7 @@ namespace StyleCop.Analyzers.MaintainabilityRules
         /// <inheritdoc/>
         public override FixAllProvider GetFixAllProvider()
         {
-            return CustomFixAllProviders.BatchFixer;
+            return FixAllInstance;
         }
 
         /// <inheritdoc/>
@@ -52,10 +57,14 @@ namespace StyleCop.Analyzers.MaintainabilityRules
         {
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-            var syntaxNode = syntaxRoot.FindNode(diagnostic.Location.SourceSpan);
-
-            TextChange textChange = new TextChange(diagnostic.Location.SourceSpan, syntaxNode.ToString() + ",");
+            var textChange = GetTextChange(diagnostic, syntaxRoot);
             return document.WithText(text.WithChanges(textChange));
+        }
+
+        private static TextChange GetTextChange(Diagnostic diagnostic, SyntaxNode syntaxRoot)
+        {
+            var syntaxNode = syntaxRoot.FindNode(diagnostic.Location.SourceSpan);
+            return new TextChange(diagnostic.Location.SourceSpan, syntaxNode.ToString() + ",");
         }
     }
 }

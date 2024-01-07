@@ -5,7 +5,6 @@
 
 namespace StyleCop.Analyzers.ReadabilityRules
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Composition;
     using System.Threading;
@@ -20,13 +19,18 @@ namespace StyleCop.Analyzers.ReadabilityRules
     [Shared]
     internal class IndentationCodeFixProvider : CodeFixProvider
     {
+        private static readonly FixAllProvider FixAllInstance
+            = new DocumentTextChangeBasedFixAllProvider(
+                ReadabilityResources.IndentationCodeFix,
+                GetTextChange);
+
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(SA1137ElementsShouldHaveTheSameIndentation.DiagnosticId);
 
         /// <inheritdoc/>
         public sealed override FixAllProvider GetFixAllProvider() =>
-            FixAll.Instance;
+            FixAllInstance;
 
         /// <inheritdoc/>
         public override Task RegisterCodeFixesAsync(CodeFixContext context)
@@ -48,23 +52,22 @@ namespace StyleCop.Analyzers.ReadabilityRules
         {
             var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 
-            TextChange textChange;
-            if (!TryGetTextChange(diagnostic, syntaxRoot, out textChange))
+            var textChange = GetTextChange(diagnostic, syntaxRoot);
+            if (textChange == null)
             {
                 return document;
             }
 
             var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-            return document.WithText(text.WithChanges(textChange));
+            return document.WithText(text.WithChanges(textChange.Value));
         }
 
-        private static bool TryGetTextChange(Diagnostic diagnostic, SyntaxNode syntaxRoot, out TextChange textChange)
+        private static TextChange? GetTextChange(Diagnostic diagnostic, SyntaxNode syntaxRoot)
         {
             string replacement;
             if (!diagnostic.Properties.TryGetValue(SA1137ElementsShouldHaveTheSameIndentation.ExpectedIndentationKey, out replacement))
             {
-                textChange = default;
-                return false;
+                return null;
             }
 
             var trivia = syntaxRoot.FindTrivia(diagnostic.Location.SourceSpan.Start);
@@ -80,43 +83,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
                 originalSpan = trivia.Span;
             }
 
-            textChange = new TextChange(originalSpan, replacement);
-            return true;
-        }
-
-        private class FixAll : DocumentBasedFixAllProvider
-        {
-            public static FixAllProvider Instance { get; } =
-                new FixAll();
-
-            protected override string CodeActionTitle =>
-                ReadabilityResources.IndentationCodeFix;
-
-            protected override async Task<SyntaxNode> FixAllInDocumentAsync(FixAllContext fixAllContext, Document document, ImmutableArray<Diagnostic> diagnostics)
-            {
-                if (diagnostics.IsEmpty)
-                {
-                    return null;
-                }
-
-                var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
-
-                List<TextChange> changes = new List<TextChange>();
-
-                foreach (var diagnostic in diagnostics)
-                {
-                    TextChange textChange;
-                    if (TryGetTextChange(diagnostic, syntaxRoot, out textChange))
-                    {
-                        changes.Add(textChange);
-                    }
-                }
-
-                changes.Sort((left, right) => left.Span.Start.CompareTo(right.Span.Start));
-
-                var text = await document.GetTextAsync().ConfigureAwait(false);
-                return await document.WithText(text.WithChanges(changes)).GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-            }
+            return new TextChange(originalSpan, replacement);
         }
     }
 }

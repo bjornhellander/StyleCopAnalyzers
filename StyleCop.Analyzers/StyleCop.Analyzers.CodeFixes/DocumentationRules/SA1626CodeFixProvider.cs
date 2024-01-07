@@ -5,7 +5,6 @@
 
 namespace StyleCop.Analyzers.DocumentationRules
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Composition;
     using System.Threading;
@@ -27,6 +26,11 @@ namespace StyleCop.Analyzers.DocumentationRules
     [Shared]
     internal class SA1626CodeFixProvider : CodeFixProvider
     {
+        private static readonly FixAllProvider FixAllnstance
+            = new DocumentTextChangeBasedFixAllProvider(
+                DocumentationResources.SA1626CodeFix,
+                GetTextChange);
+
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; }
             = ImmutableArray.Create(SA1626SingleLineCommentsMustNotUseDocumentationStyleSlashes.DiagnosticId);
@@ -34,7 +38,7 @@ namespace StyleCop.Analyzers.DocumentationRules
         /// <inheritdoc/>
         public override FixAllProvider GetFixAllProvider()
         {
-            return FixAll.Instance;
+            return FixAllnstance;
         }
 
         /// <inheritdoc/>
@@ -56,40 +60,13 @@ namespace StyleCop.Analyzers.DocumentationRules
         private static async Task<Document> GetTransformedDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-
-            TextChange textChange = new TextChange(new TextSpan(diagnostic.Location.SourceSpan.Start, 1), string.Empty);
+            var textChange = GetTextChange(diagnostic);
             return document.WithText(text.WithChanges(textChange));
         }
 
-        private class FixAll : DocumentBasedFixAllProvider
+        private static TextChange GetTextChange(Diagnostic diagnostic)
         {
-            public static FixAllProvider Instance { get; } =
-                new FixAll();
-
-            protected override string CodeActionTitle =>
-                DocumentationResources.SA1626CodeFix;
-
-            protected override async Task<SyntaxNode> FixAllInDocumentAsync(FixAllContext fixAllContext, Document document, ImmutableArray<Diagnostic> diagnostics)
-            {
-                if (diagnostics.IsEmpty)
-                {
-                    return null;
-                }
-
-                var text = await document.GetTextAsync().ConfigureAwait(false);
-
-                List<TextChange> changes = new List<TextChange>();
-                foreach (var diagnostic in diagnostics)
-                {
-                    var sourceSpan = diagnostic.Location.SourceSpan;
-                    changes.Add(new TextChange(new TextSpan(sourceSpan.Start, 1), string.Empty));
-                }
-
-                changes.Sort((left, right) => left.Span.Start.CompareTo(right.Span.Start));
-
-                var tree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
-                return await tree.WithChangedText(text.WithChanges(changes)).GetRootAsync().ConfigureAwait(false);
-            }
+            return new TextChange(new TextSpan(diagnostic.Location.SourceSpan.Start, 1), string.Empty);
         }
     }
 }

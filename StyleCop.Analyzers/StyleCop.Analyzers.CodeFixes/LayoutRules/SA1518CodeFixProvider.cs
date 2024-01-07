@@ -23,6 +23,11 @@ namespace StyleCop.Analyzers.LayoutRules
     [Shared]
     internal class SA1518CodeFixProvider : CodeFixProvider
     {
+        private static readonly FixAllProvider FixAllInstance
+            = new DocumentTextChangeBasedFixAllProvider(
+                LayoutResources.SA1518CodeFix,
+                GetTextChange);
+
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(SA1518UseLineEndingsCorrectlyAtEndOfFile.DiagnosticId);
@@ -30,7 +35,7 @@ namespace StyleCop.Analyzers.LayoutRules
         /// <inheritdoc/>
         public override FixAllProvider GetFixAllProvider()
         {
-            return FixAll.Instance;
+            return FixAllInstance;
         }
 
         /// <inheritdoc/>
@@ -43,7 +48,7 @@ namespace StyleCop.Analyzers.LayoutRules
                 context.RegisterCodeFix(
                     CodeAction.Create(
                         LayoutResources.SA1518CodeFix,
-                        cancellationToken => FixEndOfFileAsync(context.Document, diagnostic, settings.LayoutRules.NewlineAtEndOfFile, cancellationToken),
+                        cancellationToken => FixEndOfFileAsync(context.Document, diagnostic, settings, cancellationToken),
                         nameof(SA1518CodeFixProvider)),
                     diagnostic);
             }
@@ -54,36 +59,20 @@ namespace StyleCop.Analyzers.LayoutRules
         /// </summary>
         /// <param name="document">The document to be changed.</param>
         /// <param name="diagnostic">The diagnostic to fix.</param>
-        /// <param name="newlineAtEndOfFile">A <see cref="OptionSetting"/> value indicating the desired behavior.</param>
+        /// <param name="settings">The StyleCop settings to use.</param>
         /// <param name="cancellationToken">The cancellation token associated with the fix action.</param>
         /// <returns>The transformed document.</returns>
-        private static async Task<Document> FixEndOfFileAsync(Document document, Diagnostic diagnostic, OptionSetting newlineAtEndOfFile, CancellationToken cancellationToken)
+        private static async Task<Document> FixEndOfFileAsync(Document document, Diagnostic diagnostic, StyleCopSettings settings, CancellationToken cancellationToken)
         {
             var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-            string replacement = newlineAtEndOfFile == OptionSetting.Omit ? string.Empty : "\r\n";
-            return document.WithText(text.WithChanges(new TextChange(diagnostic.Location.SourceSpan, replacement)));
+            return document.WithText(text.WithChanges(GetTextChange(diagnostic, settings)));
         }
 
-        private class FixAll : DocumentBasedFixAllProvider
+        private static TextChange GetTextChange(Diagnostic diagnostic, StyleCopSettings settings)
         {
-            public static FixAllProvider Instance { get; } =
-                new FixAll();
-
-            protected override string CodeActionTitle =>
-                LayoutResources.SA1518CodeFix;
-
-            protected override async Task<SyntaxNode> FixAllInDocumentAsync(FixAllContext fixAllContext, Document document, ImmutableArray<Diagnostic> diagnostics)
-            {
-                if (diagnostics.IsEmpty)
-                {
-                    return null;
-                }
-
-                var syntaxTree = await document.GetSyntaxTreeAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-                var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxTree, fixAllContext.CancellationToken);
-                Document updatedDocument = await FixEndOfFileAsync(document, diagnostics[0], settings.LayoutRules.NewlineAtEndOfFile, fixAllContext.CancellationToken).ConfigureAwait(false);
-                return await updatedDocument.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-            }
+            var newlineAtEndOfFile = settings.LayoutRules.NewlineAtEndOfFile;
+            var replacement = newlineAtEndOfFile == OptionSetting.Omit ? string.Empty : "\r\n";
+            return new TextChange(diagnostic.Location.SourceSpan, replacement);
         }
     }
 }

@@ -5,7 +5,6 @@
 
 namespace StyleCop.Analyzers.SpacingRules
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Composition;
     using System.Threading;
@@ -26,6 +25,11 @@ namespace StyleCop.Analyzers.SpacingRules
     [Shared]
     internal class SA1028CodeFixProvider : CodeFixProvider
     {
+        private static readonly FixAllProvider FixAllInstance
+            = new DocumentTextChangeBasedFixAllProvider(
+                SpacingResources.SA1028CodeFix,
+                GetTextChange);
+
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(SA1028CodeMustNotContainTrailingWhitespace.DiagnosticId);
@@ -33,7 +37,7 @@ namespace StyleCop.Analyzers.SpacingRules
         /// <inheritdoc/>
         public sealed override FixAllProvider GetFixAllProvider()
         {
-            return FixAll.Instance;
+            return FixAllInstance;
         }
 
         /// <inheritdoc/>
@@ -62,38 +66,12 @@ namespace StyleCop.Analyzers.SpacingRules
         private static async Task<Document> RemoveWhitespaceAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-            return document.WithText(text.WithChanges(new TextChange(diagnostic.Location.SourceSpan, string.Empty)));
+            return document.WithText(text.WithChanges(GetTextChange(diagnostic)));
         }
 
-        private class FixAll : DocumentBasedFixAllProvider
+        private static TextChange GetTextChange(Diagnostic diagnostic)
         {
-            public static FixAllProvider Instance { get; } =
-                new FixAll();
-
-            protected override string CodeActionTitle =>
-                SpacingResources.SA1028CodeFix;
-
-            protected override async Task<SyntaxNode> FixAllInDocumentAsync(FixAllContext fixAllContext, Document document, ImmutableArray<Diagnostic> diagnostics)
-            {
-                if (diagnostics.IsEmpty)
-                {
-                    return null;
-                }
-
-                var text = await document.GetTextAsync().ConfigureAwait(false);
-
-                List<TextChange> changes = new List<TextChange>();
-
-                foreach (var diagnostic in diagnostics)
-                {
-                    changes.Add(new TextChange(diagnostic.Location.SourceSpan, string.Empty));
-                }
-
-                changes.Sort((left, right) => left.Span.Start.CompareTo(right.Span.Start));
-
-                var tree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
-                return await tree.WithChangedText(text.WithChanges(changes)).GetRootAsync().ConfigureAwait(false);
-            }
+            return new TextChange(diagnostic.Location.SourceSpan, string.Empty);
         }
     }
 }

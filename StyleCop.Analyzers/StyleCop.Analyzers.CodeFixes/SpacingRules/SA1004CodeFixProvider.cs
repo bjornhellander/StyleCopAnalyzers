@@ -5,7 +5,6 @@
 
 namespace StyleCop.Analyzers.SpacingRules
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Composition;
     using System.Threading;
@@ -27,6 +26,11 @@ namespace StyleCop.Analyzers.SpacingRules
     [Shared]
     internal class SA1004CodeFixProvider : CodeFixProvider
     {
+        private static readonly FixAllProvider FixAllInstance
+            = new DocumentTextChangeBasedFixAllProvider(
+                SpacingResources.SA1004CodeFix,
+                GetTextChange);
+
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; }
             = ImmutableArray.Create(SA1004DocumentationLinesMustBeginWithSingleSpace.DiagnosticId);
@@ -34,7 +38,7 @@ namespace StyleCop.Analyzers.SpacingRules
         /// <inheritdoc/>
         public override FixAllProvider GetFixAllProvider()
         {
-            return FixAll.Instance;
+            return FixAllInstance;
         }
 
         /// <inheritdoc/>
@@ -57,10 +61,10 @@ namespace StyleCop.Analyzers.SpacingRules
         {
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
-            return document.WithText(text.WithChanges(GetTextChange(root, diagnostic)));
+            return document.WithText(text.WithChanges(GetTextChange(diagnostic, root)));
         }
 
-        private static TextChange GetTextChange(SyntaxNode root, Diagnostic diagnostic)
+        private static TextChange GetTextChange(Diagnostic diagnostic, SyntaxNode root)
         {
             var token = root.FindToken(diagnostic.Location.SourceSpan.Start, findInsideTrivia: true);
             switch (token.Kind())
@@ -71,37 +75,6 @@ namespace StyleCop.Analyzers.SpacingRules
 
             default:
                 return new TextChange(new TextSpan(token.SpanStart, 0), " ");
-            }
-        }
-
-        private class FixAll : DocumentBasedFixAllProvider
-        {
-            public static FixAllProvider Instance { get; } =
-                new FixAll();
-
-            protected override string CodeActionTitle =>
-                SpacingResources.SA1004CodeFix;
-
-            protected override async Task<SyntaxNode> FixAllInDocumentAsync(FixAllContext fixAllContext, Document document, ImmutableArray<Diagnostic> diagnostics)
-            {
-                if (diagnostics.IsEmpty)
-                {
-                    return null;
-                }
-
-                var root = await document.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-                var text = await document.GetTextAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-
-                List<TextChange> changes = new List<TextChange>();
-                foreach (var diagnostic in diagnostics)
-                {
-                    changes.Add(GetTextChange(root, diagnostic));
-                }
-
-                changes.Sort((left, right) => left.Span.Start.CompareTo(right.Span.Start));
-
-                var tree = await document.GetSyntaxTreeAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
-                return await tree.WithChangedText(text.WithChanges(changes)).GetRootAsync().ConfigureAwait(false);
             }
         }
     }

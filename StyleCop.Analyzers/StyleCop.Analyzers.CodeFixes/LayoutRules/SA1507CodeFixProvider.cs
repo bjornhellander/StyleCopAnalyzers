@@ -5,7 +5,6 @@
 
 namespace StyleCop.Analyzers.LayoutRules
 {
-    using System.Collections.Generic;
     using System.Collections.Immutable;
     using System.Composition;
     using System.Threading;
@@ -24,6 +23,11 @@ namespace StyleCop.Analyzers.LayoutRules
     [Shared]
     internal class SA1507CodeFixProvider : CodeFixProvider
     {
+        private static readonly FixAllProvider FixAllInstance
+            = new DocumentTextChangeBasedFixAllProvider(
+                LayoutResources.SA1507CodeFix,
+                GetTextChange);
+
         /// <inheritdoc/>
         public override ImmutableArray<string> FixableDiagnosticIds { get; } =
             ImmutableArray.Create(SA1507CodeMustNotContainMultipleBlankLinesInARow.DiagnosticId);
@@ -31,7 +35,7 @@ namespace StyleCop.Analyzers.LayoutRules
         /// <inheritdoc/>
         public override FixAllProvider GetFixAllProvider()
         {
-            return FixAll.Instance;
+            return FixAllInstance;
         }
 
         /// <inheritdoc/>
@@ -52,44 +56,15 @@ namespace StyleCop.Analyzers.LayoutRules
 
         private static async Task<Document> GetTransformedDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken token)
         {
-            var newLine = document.Project.Solution.Workspace.Options.GetOption(FormattingOptions.NewLine, LanguageNames.CSharp);
-
             var sourceText = await document.GetTextAsync(token).ConfigureAwait(false);
-            var textChange = new TextChange(diagnostic.Location.SourceSpan, newLine);
-
+            var textChange = GetTextChange(diagnostic, document);
             return document.WithText(sourceText.WithChanges(textChange));
         }
 
-        private class FixAll : DocumentBasedFixAllProvider
+        private static TextChange GetTextChange(Diagnostic diagnostic, Document document)
         {
-            public static FixAllProvider Instance { get; } =
-                new FixAll();
-
-            protected override string CodeActionTitle =>
-                LayoutResources.SA1507CodeFix;
-
-            protected override async Task<SyntaxNode> FixAllInDocumentAsync(FixAllContext fixAllContext, Document document, ImmutableArray<Diagnostic> diagnostics)
-            {
-                if (diagnostics.IsEmpty)
-                {
-                    return null;
-                }
-
-                var newLine = fixAllContext.Document.Project.Solution.Workspace.Options.GetOption(FormattingOptions.NewLine, LanguageNames.CSharp);
-                var text = await document.GetTextAsync().ConfigureAwait(false);
-
-                List<TextChange> changes = new List<TextChange>();
-
-                foreach (var diagnostic in diagnostics)
-                {
-                    changes.Add(new TextChange(diagnostic.Location.SourceSpan, newLine));
-                }
-
-                changes.Sort((left, right) => left.Span.Start.CompareTo(right.Span.Start));
-
-                var tree = await document.GetSyntaxTreeAsync().ConfigureAwait(false);
-                return await tree.WithChangedText(text.WithChanges(changes)).GetRootAsync().ConfigureAwait(false);
-            }
+            var newLine = document.Project.Solution.Workspace.Options.GetOption(FormattingOptions.NewLine, LanguageNames.CSharp);
+            return new TextChange(diagnostic.Location.SourceSpan, newLine);
         }
     }
 }
