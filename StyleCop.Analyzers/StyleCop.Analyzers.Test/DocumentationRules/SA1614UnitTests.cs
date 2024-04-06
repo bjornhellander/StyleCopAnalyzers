@@ -246,7 +246,7 @@ public class ClassName
             await VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
         }
 
-        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
         {
             string contentWithoutDocumentation = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <ClassName>

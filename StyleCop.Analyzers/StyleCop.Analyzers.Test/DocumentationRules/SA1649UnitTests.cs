@@ -515,7 +515,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
             };
         }
 
-        protected static Task VerifyCSharpDiagnosticAsync(string fileName, string source, string testSettings, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        protected static Task VerifyCSharpDiagnosticAsync(string fileName, string source, string testSettings, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
         {
             var test = new StyleCopCodeFixVerifier<SA1649FileNameMustMatchTypeName, SA1649CodeFixProvider>.CSharpTest()
             {
@@ -531,10 +531,10 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
             return test.RunAsync(cancellationToken);
         }
 
-        protected static Task VerifyCSharpFixAsync(string oldFileName, string source, string testSettings, DiagnosticResult expected, string newFileName, string fixedSource, CancellationToken cancellationToken)
+        protected static Task VerifyCSharpFixAsync(string oldFileName, string source, string testSettings, DiagnosticResult expected, string newFileName, string fixedSource, CancellationToken cancellationToken = default)
             => VerifyCSharpFixAsync(oldFileName, source, testSettings, new[] { expected }, newFileName, fixedSource, cancellationToken);
 
-        protected static Task VerifyCSharpFixAsync(string oldFileName, string source, string testSettings, DiagnosticResult[] expected, string newFileName, string fixedSource, CancellationToken cancellationToken)
+        protected static Task VerifyCSharpFixAsync(string oldFileName, string source, string testSettings, DiagnosticResult[] expected, string newFileName, string fixedSource, CancellationToken cancellationToken = default)
         {
             var test = new StyleCopCodeFixVerifier<SA1649FileNameMustMatchTypeName, SA1649CodeFixProvider>.CSharpTest()
             {

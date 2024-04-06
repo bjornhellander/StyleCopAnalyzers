@@ -570,7 +570,7 @@ namespace StyleCop.Analyzers.Test.SpacingRules
         private DiagnosticResult Diagnostic()
             => new DiagnosticResult(this.Analyzer.SupportedDiagnostics.Single());
 
-        private Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        private Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
         {
             var test = new CSharpTest(this)
             {
@@ -581,10 +581,10 @@ namespace StyleCop.Analyzers.Test.SpacingRules
             return test.RunAsync(cancellationToken);
         }
 
-        private Task VerifyCSharpFixAsync(string source, DiagnosticResult expected, string fixedSource, CancellationToken cancellationToken)
+        private Task VerifyCSharpFixAsync(string source, DiagnosticResult expected, string fixedSource, CancellationToken cancellationToken = default)
             => this.VerifyCSharpFixAsync(source, new[] { expected }, fixedSource, cancellationToken);
 
-        private Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken)
+        private Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken = default)
         {
             var test = new CSharpTest(this)
             {

@@ -309,10 +309,10 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
         protected DiagnosticResult Diagnostic()
             => new DiagnosticResult(this.Analyzer.SupportedDiagnostics.Single());
 
-        protected Task VerifyCSharpDiagnosticAsync(string source, string testSettings, DiagnosticResult expected, CancellationToken cancellationToken)
+        protected Task VerifyCSharpDiagnosticAsync(string source, string testSettings, DiagnosticResult expected, CancellationToken cancellationToken = default)
             => this.VerifyCSharpDiagnosticAsync(source, testSettings, new[] { expected }, cancellationToken);
 
-        protected Task VerifyCSharpDiagnosticAsync(string source, string testSettings, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        protected Task VerifyCSharpDiagnosticAsync(string source, string testSettings, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
         {
             var test = new CSharpTest(this)
             {
@@ -324,10 +324,10 @@ namespace StyleCop.Analyzers.Test.MaintainabilityRules
             return test.RunAsync(cancellationToken);
         }
 
-        protected Task VerifyCSharpFixAsync(string source, string testSettings, DiagnosticResult expected, (string fileName, string content)[] fixedSources, CancellationToken cancellationToken)
+        protected Task VerifyCSharpFixAsync(string source, string testSettings, DiagnosticResult expected, (string fileName, string content)[] fixedSources, CancellationToken cancellationToken = default)
             => this.VerifyCSharpFixAsync(source, testSettings, new[] { expected }, fixedSources, cancellationToken);
 
-        protected Task VerifyCSharpFixAsync(string source, string testSettings, DiagnosticResult[] expected, (string fileName, string content)[] fixedSources, CancellationToken cancellationToken)
+        protected Task VerifyCSharpFixAsync(string source, string testSettings, DiagnosticResult[] expected, (string fileName, string content)[] fixedSources, CancellationToken cancellationToken = default)
         {
             var test = new CSharpTest(this)
             {

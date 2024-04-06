@@ -248,7 +248,7 @@ public class TestClass
             await VerifyCSharpFixAsync(testCode, expected, testCode, CancellationToken.None).ConfigureAwait(false);
         }
 
-        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
         {
             var test = CreateTest(expected);
             test.TestCode = source;
@@ -256,10 +256,10 @@ public class TestClass
             return test.RunAsync(cancellationToken);
         }
 
-        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult expected, string fixedSource, CancellationToken cancellationToken)
+        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult expected, string fixedSource, CancellationToken cancellationToken = default)
             => VerifyCSharpFixAsync(source, new[] { expected }, fixedSource, cancellationToken);
 
-        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken)
+        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken = default)
         {
             var test = CreateTest(expected);
             test.TestCode = source;

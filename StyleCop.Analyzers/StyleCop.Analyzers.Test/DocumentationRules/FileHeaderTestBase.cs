@@ -102,19 +102,19 @@ namespace Bar
         protected virtual IEnumerable<string> GetExplicitlyEnabledDiagnostics()
             => Enumerable.Empty<string>();
 
-        protected Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult expected, CancellationToken cancellationToken)
+        protected Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult expected, CancellationToken cancellationToken = default)
             => this.VerifyCSharpFixAsync(source, new[] { expected }, fixedSource: null, cancellationToken);
 
-        protected Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        protected Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
             => this.VerifyCSharpFixAsync(source, expected, fixedSource: null, cancellationToken);
 
-        protected Task VerifyCSharpFixAsync(string source, DiagnosticResult expected, string fixedSource, CancellationToken cancellationToken)
+        protected Task VerifyCSharpFixAsync(string source, DiagnosticResult expected, string fixedSource, CancellationToken cancellationToken = default)
             => this.VerifyCSharpFixAsync(source, new[] { expected }, fixedSource, cancellationToken);
 
-        protected Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken)
+        protected Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken = default)
             => this.VerifyCSharpFixAsync(source, expected, fixedSource, DiagnosticResult.EmptyDiagnosticResults, cancellationToken);
 
-        protected Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, DiagnosticResult[] remainingDiagnostics, CancellationToken cancellationToken)
+        protected Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, DiagnosticResult[] remainingDiagnostics, CancellationToken cancellationToken = default)
         {
             var test = new StyleCopCodeFixVerifier<FileHeaderAnalyzers, FileHeaderCodeFixProvider>.CSharpTest
             {

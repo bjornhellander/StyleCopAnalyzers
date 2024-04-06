@@ -219,10 +219,10 @@ using Microsoft.CodeAnalysis;
             await VerifyCSharpFixAsync(testCode, expected, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
         }
 
-        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
             => VerifyCSharpFixAsync(source, expected, fixedSource: null, cancellationToken);
 
-        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken)
+        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken = default)
         {
             var test = new StyleCopCodeFixVerifier<SA1210UsingDirectivesMustBeOrderedAlphabeticallyByNamespace, UsingCodeFixProvider>.CSharpTest
             {

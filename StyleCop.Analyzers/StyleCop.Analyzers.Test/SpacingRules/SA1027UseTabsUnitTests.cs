@@ -231,7 +231,7 @@ namespace StyleCop.Analyzers.Test.SpacingRules
         private static DiagnosticResult Diagnostic()
             => StyleCopCodeFixVerifier<SA1027UseTabsCorrectly, SA1027CodeFixProvider>.Diagnostic();
 
-        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
         {
             var test = new StyleCopCodeFixVerifier<SA1027UseTabsCorrectly, SA1027CodeFixProvider>.CSharpTest
             {
@@ -243,7 +243,7 @@ namespace StyleCop.Analyzers.Test.SpacingRules
             return test.RunAsync(cancellationToken);
         }
 
-        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken)
+        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken = default)
         {
             var test = new StyleCopCodeFixVerifier<SA1027UseTabsCorrectly, SA1027CodeFixProvider>.CSharpTest
             {

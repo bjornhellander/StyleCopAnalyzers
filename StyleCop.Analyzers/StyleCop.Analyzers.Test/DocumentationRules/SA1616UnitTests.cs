@@ -548,13 +548,13 @@ public class ClassName
             await VerifyCSharpFixAsync(testCode, expected, testCode, offerEmptyFixer: true, CancellationToken.None).ConfigureAwait(false);
         }
 
-        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
             => VerifyCSharpFixAsync(source, expected, fixedSource: null, offerEmptyFixer: false, cancellationToken);
 
-        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult expected, string fixedSource, bool offerEmptyFixer, CancellationToken cancellationToken)
+        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult expected, string fixedSource, bool offerEmptyFixer, CancellationToken cancellationToken = default)
             => VerifyCSharpFixAsync(source, new[] { expected }, fixedSource, offerEmptyFixer, cancellationToken);
 
-        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, bool offerEmptyFixer, CancellationToken cancellationToken)
+        private static Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, bool offerEmptyFixer, CancellationToken cancellationToken = default)
         {
             string contentWithoutDocumentation = @"<?xml version=""1.0"" encoding=""utf-8"" ?>
 <ClassName>

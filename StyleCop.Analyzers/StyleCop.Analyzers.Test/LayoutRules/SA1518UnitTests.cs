@@ -349,7 +349,7 @@ public class Foo
             await VerifyCSharpFixAsync(newlineAtEndOfFile, testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
         }
 
-        private static Task VerifyCSharpDiagnosticAsync(OptionSetting? newlineAtEndOfFile, string source, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        private static Task VerifyCSharpDiagnosticAsync(OptionSetting? newlineAtEndOfFile, string source, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
         {
             var test = new StyleCopCodeFixVerifier<SA1518UseLineEndingsCorrectlyAtEndOfFile, SA1518CodeFixProvider>.CSharpTest
             {
@@ -365,10 +365,10 @@ public class Foo
             return test.RunAsync(cancellationToken);
         }
 
-        private static Task VerifyCSharpFixAsync(OptionSetting? newlineAtEndOfFile, string source, DiagnosticResult expected, string fixedSource, CancellationToken cancellationToken)
+        private static Task VerifyCSharpFixAsync(OptionSetting? newlineAtEndOfFile, string source, DiagnosticResult expected, string fixedSource, CancellationToken cancellationToken = default)
             => VerifyCSharpFixAsync(newlineAtEndOfFile, source, new[] { expected }, fixedSource, cancellationToken);
 
-        private static Task VerifyCSharpFixAsync(OptionSetting? newlineAtEndOfFile, string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken)
+        private static Task VerifyCSharpFixAsync(OptionSetting? newlineAtEndOfFile, string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken = default)
         {
             var test = new StyleCopCodeFixVerifier<SA1518UseLineEndingsCorrectlyAtEndOfFile, SA1518CodeFixProvider>.CSharpTest
             {

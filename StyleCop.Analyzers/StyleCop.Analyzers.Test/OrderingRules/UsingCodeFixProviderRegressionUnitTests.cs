@@ -120,7 +120,7 @@ namespace MyNamespace
             await this.VerifyCSharpFixAsync(testCode, new[] { expected }, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
         }
 
-        private Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken)
+        private Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken = default)
         {
             var testSettings = @"
 {

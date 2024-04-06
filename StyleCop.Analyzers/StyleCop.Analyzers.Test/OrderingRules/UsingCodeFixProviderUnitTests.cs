@@ -642,7 +642,7 @@ namespace Fish
             await this.VerifyCSharpFixAsync(testCode, expected, fixedTestCode, fixedExpected, cancellationToken: CancellationToken.None).ConfigureAwait(false);
         }
 
-        private Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, DiagnosticResult[] remainingDiagnostics, CancellationToken cancellationToken)
+        private Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, DiagnosticResult[] remainingDiagnostics, CancellationToken cancellationToken = default)
         {
             string testSettings = $@"
 {{

@@ -350,7 +350,7 @@ namespace MyNamespace
         private static DiagnosticResult Diagnostic()
             => StyleCopCodeFixVerifier<SA1217UsingStaticDirectivesMustBeOrderedAlphabetically, UsingCodeFixProvider>.Diagnostic();
 
-        private Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        private Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
         {
             var test = new StyleCopCodeFixVerifier<SA1217UsingStaticDirectivesMustBeOrderedAlphabetically, UsingCodeFixProvider>.CSharpTest
             {
@@ -362,7 +362,7 @@ namespace MyNamespace
             return test.RunAsync(cancellationToken);
         }
 
-        private Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken)
+        private Task VerifyCSharpFixAsync(string source, DiagnosticResult[] expected, string fixedSource, CancellationToken cancellationToken = default)
         {
             var test = new StyleCopCodeFixVerifier<SA1217UsingStaticDirectivesMustBeOrderedAlphabetically, UsingCodeFixProvider>.CSharpTest
             {

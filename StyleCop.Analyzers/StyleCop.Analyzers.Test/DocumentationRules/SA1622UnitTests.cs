@@ -307,7 +307,7 @@ public class TestClass
             await VerifyCSharpDiagnosticAsync(testCode.Replace("##", memberText), expected, CancellationToken.None).ConfigureAwait(false);
         }
 
-        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken)
+        private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken = default)
         {
             var test = CreateTest(expected);
             test.TestCode = source;
