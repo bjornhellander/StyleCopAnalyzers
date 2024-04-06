@@ -7,7 +7,6 @@ namespace StyleCop.Analyzers.Test.CSharp8.SpacingRules
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using Microsoft.CodeAnalysis.Testing;
     using StyleCop.Analyzers.Test.CSharp7.SpacingRules;
     using Xunit;
 
@@ -58,13 +57,8 @@ namespace TestNamespace
 }
 ";
 
-            await new CSharpTest()
-            {
-                ReferenceAssemblies = ReferenceAssemblies.NetCore.NetCoreApp31,
-                TestCode = testCode,
-                ExpectedDiagnostics = { Diagnostic(DescriptorNotPrecededByWhitespace).WithLocation(0).WithArguments("(int)") },
-                FixedCode = fixedCode,
-            }.RunAsync(CancellationToken.None).ConfigureAwait(false);
+            var expected = Diagnostic(DescriptorNotPrecededByWhitespace).WithLocation(0).WithArguments("(int)");
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
         }
 
         [Fact]
