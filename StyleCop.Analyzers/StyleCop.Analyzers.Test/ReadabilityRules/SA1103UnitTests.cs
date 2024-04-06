@@ -65,7 +65,7 @@ namespace StyleCop.Analyzers.Test.ReadabilityRules
                 Diagnostic(SA110xQueryClauses.SA1103Descriptor).WithLocation(11, 21),
             };
 
-            await VerifyCSharpFixAsync(testCode, expectedDiagnostics, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expectedDiagnostics, fixedTestCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -249,7 +249,7 @@ namespace StyleCop.Analyzers.Test.ReadabilityRules
                 Diagnostic(SA110xQueryClauses.SA1103Descriptor).WithLocation(11, 21),
             };
 
-            await VerifyCSharpFixAsync(testCode, expectedDiagnostics, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expectedDiagnostics, fixedTestCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -365,7 +365,7 @@ namespace StyleCop.Analyzers.Test.ReadabilityRules
                 Diagnostic(SA110xQueryClauses.SA1103Descriptor).WithLocation(11, 21),
             };
 
-            await VerifyCSharpFixAsync(testCode, expectedDiagnostics, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expectedDiagnostics, fixedTestCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -390,7 +390,7 @@ namespace StyleCop.Analyzers.Test.ReadabilityRules
 ";
 
             var expectedDiagnostics = new DiagnosticResult("CS0742", DiagnosticSeverity.Error).WithLocation(12, 38).WithMessage("A query body must end with a select clause or a group clause");
-            await VerifyCSharpFixAsync(testCode, expectedDiagnostics, testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expectedDiagnostics, testCode).ConfigureAwait(false);
         }
 
         [Fact]

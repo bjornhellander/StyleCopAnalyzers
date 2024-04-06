@@ -30,7 +30,7 @@ namespace StyleCop.Analyzers.Test.LayoutRules
 {
 }";
 
-            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace StyleCop.Analyzers.Test.LayoutRules
             var testCode = "public enum Foo { }";
 
             var expected = Diagnostic().WithLocation(1, 17);
-            await VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(testCode, expected).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace StyleCop.Analyzers.Test.LayoutRules
             var testCode = "public enum Foo { Value1 }";
 
             var expected = Diagnostic().WithLocation(1, 17);
-            await VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(testCode, expected).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace StyleCop.Analyzers.Test.LayoutRules
 { Value1 }";
 
             var expected = Diagnostic().WithLocation(2, 1);
-            await VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(testCode, expected).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace StyleCop.Analyzers.Test.LayoutRules
             var testCode = @"public enum Foo { 
 Value1 }";
 
-            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ Value1 }";
 ";
 
             var expected = Diagnostic().WithLocation(1, 17);
-            await VerifyCSharpFixAsync(testCode, expected, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedTestCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ Value1 }";
 ";
 
             var expected = Diagnostic().WithLocation(1, 17);
-            await VerifyCSharpFixAsync(testCode, expected, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedTestCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ Value1 }";
 ";
 
             var expected = Diagnostic().WithLocation(1, 17);
-            await VerifyCSharpFixAsync(testCode, expected, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedTestCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ Value1 }";
 ";
 
             var expected = Diagnostic().WithLocation(2, 1);
-            await VerifyCSharpFixAsync(testCode, expected, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedTestCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ Value1 }";
 ";
 
             var expected = Diagnostic().WithLocation(1, 27);
-            await VerifyCSharpFixAsync(testCode, expected, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedTestCode).ConfigureAwait(false);
         }
     }
 }

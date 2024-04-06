@@ -32,7 +32,7 @@ namespace StyleCop.Analyzers.Test.CSharp9.ReadabilityRules
 }}";
 
             var expected = this.GetExpectedResultTestPrimaryConstructor();
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         [Theory]
@@ -53,7 +53,7 @@ namespace StyleCop.Analyzers.Test.CSharp9.ReadabilityRules
 }}";
 
             var expected = this.GetExpectedResultTestPrimaryConstructor();
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         [Theory]
@@ -70,7 +70,7 @@ namespace StyleCop.Analyzers.Test.CSharp9.ReadabilityRules
 {{
 }}";
 
-            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         [Theory]
@@ -99,7 +99,7 @@ namespace StyleCop.Analyzers.Test.CSharp9.ReadabilityRules
 }}";
 
             var expected = this.GetExpectedResultTestPrimaryConstructorBaseList();
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         [Theory]
@@ -127,7 +127,7 @@ namespace StyleCop.Analyzers.Test.CSharp9.ReadabilityRules
 }}";
 
             var expected = this.GetExpectedResultTestPrimaryConstructorBaseList();
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         protected virtual DiagnosticResult[] GetExpectedResultTestPrimaryConstructor()

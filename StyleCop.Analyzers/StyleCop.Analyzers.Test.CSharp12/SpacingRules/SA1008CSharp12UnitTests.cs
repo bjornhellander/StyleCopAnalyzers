@@ -26,7 +26,7 @@ using TestAlias ={|#0:(|}string X, bool Y);";
 using TestAlias = (string X, bool Y);";
 
             var expected = Diagnostic(DescriptorPreceded).WithLocation(0);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
     }
 }

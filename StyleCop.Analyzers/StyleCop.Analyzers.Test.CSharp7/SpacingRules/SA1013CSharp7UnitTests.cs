@@ -50,7 +50,7 @@ public class Foo
                 Diagnostic().WithLocation(1).WithArguments(string.Empty, "preceded"),
             };
 
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -107,7 +107,7 @@ public class Foo
                 Diagnostic().WithLocation(2).WithArguments(string.Empty, "preceded"),
             };
 
-            await VerifyCSharpFixAsync(LanguageVersion.CSharp7_3.OrLaterDefault(), testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(LanguageVersion.CSharp7_3.OrLaterDefault(), testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -164,7 +164,7 @@ public class Foo
                 Diagnostic().WithLocation(2).WithArguments(string.Empty, "preceded"),
             };
 
-            await VerifyCSharpFixAsync(LanguageVersion.CSharp7_3.OrLaterDefault(), testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(LanguageVersion.CSharp7_3.OrLaterDefault(), testCode, expected, fixedCode).ConfigureAwait(false);
         }
     }
 }

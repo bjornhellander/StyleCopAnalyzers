@@ -206,7 +206,7 @@ public class Foo
     }}
 }}";
 
-            await this.VerifyCSharpDiagnosticAsync(this.BuildTestCode(testCode), DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(this.BuildTestCode(testCode), DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         [Fact]
@@ -234,7 +234,7 @@ class Debug
 }}
 ";
 
-            await this.VerifyCSharpDiagnosticAsync(this.BuildTestCode(testCode), DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(this.BuildTestCode(testCode), DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         [Fact]
@@ -249,7 +249,7 @@ public class Foo
     }
 }";
 
-            await this.VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         [Fact]
@@ -279,7 +279,7 @@ public class Foo
                 this.Diagnostic().WithLocation(12, 9),
             };
 
-            await this.VerifyCSharpDiagnosticAsync(this.BuildTestCode(testCode), expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(this.BuildTestCode(testCode), expected).ConfigureAwait(false);
         }
 
         protected DiagnosticResult Diagnostic()
@@ -335,7 +335,7 @@ public class Foo
     }}}}
 }}}}";
 
-            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected).ConfigureAwait(false);
         }
 
         private async Task TestConstantMessage_Local_PassExecuterAsync(string argument, params DiagnosticResult[] expected)
@@ -350,7 +350,7 @@ public class Foo
     }}}}
 }}}}";
 
-            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected).ConfigureAwait(false);
         }
 
         private async Task TestConstantMessage_Inline_PassExecuterAsync(string argument, params DiagnosticResult[] expected)
@@ -364,7 +364,7 @@ public class Foo
     }}}}
 }}}}";
 
-            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected).ConfigureAwait(false);
         }
 
         private async Task TestConstantMessage_Field_FailAsync(string argument)
@@ -380,7 +380,7 @@ public class Foo
 }}}}";
 
             DiagnosticResult expected = this.Diagnostic().WithLocation(7, 9);
-            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected).ConfigureAwait(false);
         }
 
         private async Task TestConstantMessage_Local_FailAsync(string argument)
@@ -396,7 +396,7 @@ public class Foo
 }}}}";
 
             DiagnosticResult expected = this.Diagnostic().WithLocation(7, 9);
-            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected).ConfigureAwait(false);
         }
 
         private async Task TestConstantMessage_Inline_FailAsync(string argument)
@@ -411,7 +411,7 @@ public class Foo
 }}}}";
 
             DiagnosticResult expected = this.Diagnostic().WithLocation(6, 9);
-            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(string.Format(this.BuildTestCode(testCodeFormat), argument), expected).ConfigureAwait(false);
         }
 
         private class CSharpTest : StyleCopDiagnosticVerifier<EmptyDiagnosticAnalyzer>.CSharpTest

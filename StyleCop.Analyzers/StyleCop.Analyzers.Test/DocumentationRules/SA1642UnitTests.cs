@@ -36,7 +36,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
         }}
     }}
 }}";
-            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         [Theory]
@@ -538,7 +538,7 @@ class ClassName
 ";
 
             DiagnosticResult expected = Diagnostic().WithLocation(6, 13);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         [Theory]
@@ -563,7 +563,7 @@ class ClassName
 }}
 ";
 
-            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -602,7 +602,7 @@ internal abstract class CustomizableBlockSubscriberBase<TSource, TTarget, TSubsc
 ";
 
             DiagnosticResult expected = Diagnostic().WithLocation(7, 43);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         [Theory]
@@ -635,7 +635,7 @@ public {typeKind} TestClass
 ";
 
             DiagnosticResult expected = Diagnostic().WithLocation(5, 43);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         [Theory]
@@ -668,7 +668,7 @@ public {typeKind} TestClass<T>
 ";
 
             DiagnosticResult expected = Diagnostic().WithLocation(5, 43);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -704,7 +704,7 @@ public class TestClass
 
             // TODO: The codefix produces a wrong result for this scenario but its not easily fixed.
             DiagnosticResult expected = Diagnostic().WithLocation(4, 9);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -722,7 +722,7 @@ public class TestClass
 }
 ";
 
-            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -740,7 +740,7 @@ public class TestClass
 }
 ";
 
-            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -759,7 +759,7 @@ public class TestClass
 ";
 
             var expected = Diagnostic().WithLocation(4, 9);
-            await VerifyCSharpFixAsync(testCode, expected, testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, testCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -778,7 +778,7 @@ public class TestClass
 ";
 
             var expected = Diagnostic().WithLocation(4, 9);
-            await VerifyCSharpFixAsync(testCode, expected, testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, testCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -799,7 +799,7 @@ public class WrongClass { }
 ";
 
             var expected = Diagnostic().WithLocation(4, 9);
-            await VerifyCSharpFixAsync(testCode, expected, testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, testCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -820,7 +820,7 @@ namespace WrongClass { }
 ";
 
             var expected = Diagnostic().WithLocation(4, 9);
-            await VerifyCSharpFixAsync(testCode, expected, testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, testCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -839,7 +839,7 @@ public class TestClass
 ";
 
             var expected = Diagnostic().WithLocation(4, 9);
-            await VerifyCSharpFixAsync(testCode, expected, testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, testCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -858,7 +858,7 @@ public class TestClass
 ";
 
             var expected = Diagnostic().WithLocation(4, 9);
-            await VerifyCSharpFixAsync(testCode, expected, testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, testCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -877,7 +877,7 @@ public class TestClass
 ";
 
             var expected = Diagnostic().WithLocation(4, 9);
-            await VerifyCSharpFixAsync(testCode, expected, testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, testCode).ConfigureAwait(false);
         }
 
         [Theory]
@@ -933,7 +933,7 @@ public class TestClass
 ";
 
             var expected = Diagnostic().WithLocation(4, 9);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -966,7 +966,7 @@ public class TestClass
 ";
 
             var expected = Diagnostic().WithLocation(4, 9);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         [Theory]
@@ -998,7 +998,7 @@ public class TestClass
 }}";
 
             DiagnosticResult expected = Diagnostic().WithLocation(5, 13);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -1022,7 +1022,7 @@ public class TestClass
 ";
 
             var expected = Diagnostic().WithLocation(4, 9);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         [Theory]
@@ -1058,7 +1058,7 @@ public class TestClass
 }}";
 
             DiagnosticResult expected = Diagnostic().WithLocation(5, 13);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         private static async Task TestEmptyConstructorAsync(string typeKind, string modifiers)
@@ -1079,7 +1079,7 @@ public class TestClass
 }}";
 
             string arguments = typeKind == "struct" && modifiers != "static" ? "int argument" : null;
-            await VerifyCSharpDiagnosticAsync(string.Format(testCode, typeKind, modifiers, arguments), DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(string.Format(testCode, typeKind, modifiers, arguments), DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         private static Task TestConstructorCorrectDocumentationAsync(string typeKind, string modifiers, string part1, string part2, string part3, bool generic)
@@ -1103,7 +1103,7 @@ public class TestClass
 }}";
 
             string arguments = typeKind == "struct" && modifiers != "static" ? "int argument" : null;
-            await VerifyCSharpDiagnosticAsync(string.Format(testCode, typeKind, generic ? "<T1, T2>" : string.Empty, generic ? "{T1, T2}" : string.Empty, part1, part2, part3, modifiers, arguments), settings, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(string.Format(testCode, typeKind, generic ? "<T1, T2>" : string.Empty, generic ? "{T1, T2}" : string.Empty, part1, part2, part3, modifiers, arguments), settings, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
 
             // Then test splitting after the <see> element
             testCode = @"namespace FooNamespace
@@ -1121,7 +1121,7 @@ public class TestClass
     }}
 }}";
 
-            await VerifyCSharpDiagnosticAsync(string.Format(testCode, typeKind, generic ? "<T1, T2>" : string.Empty, generic ? "{T1, T2}" : string.Empty, part1, part2, part3, modifiers, arguments), settings, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(string.Format(testCode, typeKind, generic ? "<T1, T2>" : string.Empty, generic ? "{T1, T2}" : string.Empty, part1, part2, part3, modifiers, arguments), settings, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
 
             // Then test splitting before the <see> element
             testCode = @"namespace FooNamespace
@@ -1139,7 +1139,7 @@ public class TestClass
     }}
 }}";
 
-            await VerifyCSharpDiagnosticAsync(string.Format(testCode, typeKind, generic ? "<T1, T2>" : string.Empty, generic ? "{T1, T2}" : string.Empty, part1, part2, part3, modifiers, arguments), settings, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(string.Format(testCode, typeKind, generic ? "<T1, T2>" : string.Empty, generic ? "{T1, T2}" : string.Empty, part1, part2, part3, modifiers, arguments), settings, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         private static Task TestConstructorCorrectDocumentationSimpleAsync(string typeKind, string modifiers, string part1, string part2, bool generic)
@@ -1191,7 +1191,7 @@ public class TestClass
 }}";
 
             DiagnosticResult expected = Diagnostic().WithLocation(5, 13);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         private static async Task TestConstructorSimpleDocumentationAsync(string typeKind, string modifiers, string part1, string part2, bool generic)
@@ -1232,7 +1232,7 @@ public class TestClass
     }}
 }}";
             fixedCode = string.Format(fixedCode, typeKind, generic ? "<T1, T2>" : string.Empty, generic ? "{T1, T2}" : string.Empty, part1, part2, part3, modifiers, arguments);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         private static async Task TestConstructorSimpleDocumentationWrongTypeNameAsync(string typeKind, string modifiers, string part1, string part2, bool generic)
@@ -1273,7 +1273,7 @@ public class TestClass
     }}
 }}";
             fixedCode = string.Format(fixedCode, typeKind, generic ? "<T1, T2>" : string.Empty, generic ? "{T1, T2}" : string.Empty, part1, part2, part3, modifiers, arguments);
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode).ConfigureAwait(false);
         }
 
         private static Task VerifyCSharpDiagnosticAsync(string source, DiagnosticResult[] expected, CancellationToken cancellationToken = default)

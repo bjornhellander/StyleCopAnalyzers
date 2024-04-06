@@ -61,7 +61,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             var expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpFixAsync("WrongFileName.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType.cs", fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("WrongFileName.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType.cs", fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             var expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpFixAsync("WrongFileName.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType{T}.cs", fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("WrongFileName.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType{T}.cs", fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             var expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpFixAsync("WrongFileName.cs", testCode, MetadataSettings, expectedDiagnostic, "TestType`1.cs", fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("WrongFileName.cs", testCode, MetadataSettings, expectedDiagnostic, "TestType`1.cs", fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             var expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpFixAsync("WrongFileName.svc.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType.svc.cs", fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("WrongFileName.svc.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType.svc.cs", fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             var expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpFixAsync("WrongFileName", testCode, StyleCopSettings, expectedDiagnostic, "TestType", fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("WrongFileName", testCode, StyleCopSettings, expectedDiagnostic, "TestType", fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 }}
 ";
 
-            await VerifyCSharpDiagnosticAsync("testtype.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync("testtype.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 }}
 ";
 
-            await VerifyCSharpDiagnosticAsync("testtype{t}.cs", testCode, StyleCopSettings, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync("testtype{t}.cs", testCode, StyleCopSettings, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -217,7 +217,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 }}
 ";
 
-            await VerifyCSharpDiagnosticAsync("testtype`1.cs", testCode, MetadataSettings, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync("testtype`1.cs", testCode, MetadataSettings, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             var expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpFixAsync("TestType2.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType.cs", fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("TestType2.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType.cs", fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             var expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpFixAsync("TestType2.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType{T}.cs", fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("TestType2.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType{T}.cs", fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             var expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpFixAsync("TestType2.cs", testCode, MetadataSettings, expectedDiagnostic, "TestType`1.cs", fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("TestType2.cs", testCode, MetadataSettings, expectedDiagnostic, "TestType`1.cs", fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -339,7 +339,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             // File names are not checked for 'enum' if more than one is present
-            await VerifyCSharpDiagnosticAsync("TestType2.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync("TestType2.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         [Fact]
@@ -354,7 +354,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             // File names are not checked for 'delegate' if more than one is present
-            await VerifyCSharpDiagnosticAsync("TestType2.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync("TestType2.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -374,7 +374,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 }}
 ";
 
-            await VerifyCSharpDiagnosticAsync("WrongFileName.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync("WrongFileName.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -395,8 +395,8 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             var expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpDiagnosticAsync("TestType.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
-            await VerifyCSharpFixAsync("TestType`3.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType{T1,T2,T3}.cs", testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync("TestType.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("TestType`3.cs", testCode, StyleCopSettings, expectedDiagnostic, "TestType{T1,T2,T3}.cs", testCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -417,10 +417,10 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             var expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpFixAsync("TestType{T1,T2,T3}.cs", testCode, MetadataSettings, expectedDiagnostic, "TestType`3.cs", testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("TestType{T1,T2,T3}.cs", testCode, MetadataSettings, expectedDiagnostic, "TestType`3.cs", testCode).ConfigureAwait(false);
 
             expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpFixAsync("TestType.cs", testCode, MetadataSettings, expectedDiagnostic, "TestType`3.cs", testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("TestType.cs", testCode, MetadataSettings, expectedDiagnostic, "TestType`3.cs", testCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -450,7 +450,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 ";
 
             var expectedDiagnostic = Diagnostic().WithLocation(0);
-            await VerifyCSharpFixAsync("TestType.svc.cs", testCode, MetadataSettings, expectedDiagnostic, "TestType`1.svc.cs", fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync("TestType.svc.cs", testCode, MetadataSettings, expectedDiagnostic, "TestType`1.svc.cs", fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -465,7 +465,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
 }
 ";
 
-            await VerifyCSharpDiagnosticAsync("Test0.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync("Test0.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -484,7 +484,7 @@ namespace StyleCop.Analyzers.Test.DocumentationRules
                             }
                             ";
 
-            await VerifyCSharpDiagnosticAsync("Class1.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync("Class1.cs", testCode, testSettings: null, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         protected static string GetTypeDeclaration(string typeKind, string typeName, int? diagnosticKey = null)

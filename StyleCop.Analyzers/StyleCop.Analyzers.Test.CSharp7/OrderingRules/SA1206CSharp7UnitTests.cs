@@ -34,7 +34,7 @@ namespace StyleCop.Analyzers.Test.CSharp7.OrderingRules
     }}
 }}
 ";
-            await VerifyCSharpDiagnosticAsync(LanguageVersion.CSharp7_2, testCode, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(LanguageVersion.CSharp7_2, testCode, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace StyleCop.Analyzers.Test.CSharp7.OrderingRules
             {
                 Diagnostic().WithLocation(3, 14).WithArguments("private", "readonly"),
             };
-            await VerifyCSharpDiagnosticAsync(LanguageVersion.CSharp7_2, testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(LanguageVersion.CSharp7_2, testCode, expected).ConfigureAwait(false);
         }
     }
 }

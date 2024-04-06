@@ -28,7 +28,7 @@ namespace StyleCop.Analyzers.Test.CSharp9.LayoutRules
 }}
 ";
 
-            await VerifyCSharpFixAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, testCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, testCode).ConfigureAwait(false);
         }
 
         [Theory]

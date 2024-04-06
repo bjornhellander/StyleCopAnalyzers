@@ -47,11 +47,7 @@ class C
                 Diagnostic().WithLocation(0).WithArguments(" not", "preceded"),
             };
 
-            await VerifyCSharpFixAsync(
-                testCode,
-                expectedResults,
-                fixedCode,
-                CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expectedResults, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -87,11 +83,7 @@ class C
                 Diagnostic().WithLocation(0).WithArguments(" not", "preceded"),
             };
 
-            await VerifyCSharpFixAsync(
-                testCode,
-                expectedResults,
-                fixedCode,
-                CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expectedResults, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -127,11 +119,7 @@ class C
                 Diagnostic().WithLocation(0).WithArguments(" not", "preceded"),
             };
 
-            await VerifyCSharpFixAsync(
-                testCode,
-                expectedResults,
-                fixedCode,
-                CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expectedResults, fixedCode).ConfigureAwait(false);
         }
     }
 }

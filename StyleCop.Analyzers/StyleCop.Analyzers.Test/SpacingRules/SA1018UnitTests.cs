@@ -131,7 +131,7 @@ namespace StyleCop.Analyzers.Test.SpacingRules
 
             var expected = this.GetExpectedResultSyntaxErrorAtEndOfFile();
 
-            await VerifyCSharpDiagnosticAsync(testCode, expected, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpDiagnosticAsync(testCode, expected).ConfigureAwait(false);
         }
 
         protected virtual DiagnosticResult[] GetExpectedResultSyntaxErrorAtEndOfFile()

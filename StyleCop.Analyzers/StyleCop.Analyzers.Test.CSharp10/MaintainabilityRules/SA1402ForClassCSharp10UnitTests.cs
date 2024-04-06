@@ -38,8 +38,7 @@ public class TestClass2 {{ }}
                 {
                     ("/0/Test0.cs", fixedCode1),
                     ("TestClass2.cs", fixedCode2),
-                },
-                CancellationToken.None).ConfigureAwait(false);
+                }).ConfigureAwait(false);
         }
     }
 }

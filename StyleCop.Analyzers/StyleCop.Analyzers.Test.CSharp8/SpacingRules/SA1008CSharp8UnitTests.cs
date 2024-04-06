@@ -106,11 +106,7 @@ class C
                 Diagnostic(DescriptorNotFollowed).WithLocation(0),
             };
 
-            await VerifyCSharpFixAsync(
-                testCode,
-                expectedResults,
-                fixedCode,
-                CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expectedResults, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -143,11 +139,7 @@ class C
                 Diagnostic(DescriptorNotFollowed).WithLocation(1),
             };
 
-            await VerifyCSharpFixAsync(
-                testCode,
-                expectedResults,
-                fixedCode,
-                CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expectedResults, fixedCode).ConfigureAwait(false);
         }
 
         [Fact]
@@ -188,11 +180,7 @@ internal class TestClass
                 Diagnostic(DescriptorNotFollowed).WithLocation(0),
             };
 
-            await VerifyCSharpFixAsync(
-                testCode,
-                expectedResults,
-                fixedCode,
-                CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expectedResults, fixedCode).ConfigureAwait(false);
         }
     }
 }

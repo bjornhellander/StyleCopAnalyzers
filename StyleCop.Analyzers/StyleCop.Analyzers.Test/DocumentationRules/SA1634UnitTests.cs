@@ -48,7 +48,7 @@ namespace Bar
 ";
 
             var expectedDiagnostic = Diagnostic(FileHeaderAnalyzers.SA1634Descriptor).WithLocation(1, 1);
-            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Bar
 }
 ";
 
-            await this.VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -96,7 +96,7 @@ namespace Bar
 ";
 
             var expectedDiagnostic = Diagnostic(FileHeaderAnalyzers.SA1635Descriptor).WithLocation(1, 4);
-            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Bar
 ";
 
             var expectedDiagnostic = Diagnostic(FileHeaderAnalyzers.SA1634Descriptor).WithLocation(1, 1);
-            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Bar
   }
 }
 ";
-            await this.VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpDiagnosticAsync(testCode, DiagnosticResult.EmptyDiagnosticResults).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -193,7 +193,7 @@ namespace Bar
 ";
 
             var expectedDiagnostic = Diagnostic(FileHeaderAnalyzers.SA1634Descriptor).WithLocation(1, 5);
-            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace Bar
 ";
 
             var expectedDiagnostic = Diagnostic(FileHeaderAnalyzers.SA1634Descriptor).WithLocation(1, 1);
-            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -261,7 +261,7 @@ namespace Bar
 ";
 
             var expectedDiagnostic = Diagnostic(FileHeaderAnalyzers.SA1634Descriptor).WithLocation(1, 1);
-            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace Bar
 ";
 
             var expectedDiagnostic = Diagnostic(FileHeaderAnalyzers.SA1634Descriptor).WithLocation(1, 1);
-            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -339,7 +339,7 @@ namespace Bar
 ";
 
             var expectedDiagnostic = Diagnostic(FileHeaderAnalyzers.SA1634Descriptor).WithLocation(1, 1);
-            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await this.VerifyCSharpFixAsync(testCode, expectedDiagnostic, fixedCode).ConfigureAwait(false);
         }
 
         protected override string GetSettings()
