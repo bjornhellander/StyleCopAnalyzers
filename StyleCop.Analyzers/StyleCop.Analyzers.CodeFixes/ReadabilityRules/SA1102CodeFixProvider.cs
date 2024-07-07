@@ -56,12 +56,13 @@ namespace StyleCop.Analyzers.ReadabilityRules
 
             var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxRoot.SyntaxTree, cancellationToken);
             var indentationTrivia = QueryIndentationHelpers.GetQueryIndentationTrivia(settings.Indentation, token);
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
 
             var precedingToken = token.GetPreviousToken();
 
             var replaceMap = new Dictionary<SyntaxToken, SyntaxToken>()
             {
-                [precedingToken] = precedingToken.WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed),
+                [precedingToken] = precedingToken.WithTrailingTrivia(endOfLineTrivia),
                 [token] = token.WithLeadingTrivia(indentationTrivia),
             };
 

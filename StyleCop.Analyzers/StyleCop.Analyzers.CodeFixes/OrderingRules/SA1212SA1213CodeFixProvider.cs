@@ -68,7 +68,8 @@ namespace StyleCop.Analyzers.OrderingRules
             if (HasLeadingBlankLines(secondAccessor))
             {
                 trackedFirstAccessor = syntaxRoot.GetCurrentNode(firstAccesor);
-                var newFirstAccessor = trackedFirstAccessor.WithLeadingTrivia(new[] { SyntaxFactory.CarriageReturnLineFeed }.Concat(firstAccesor.GetFirstToken().WithoutLeadingBlankLines().LeadingTrivia));
+                var endOfLineTrivia = document.GetEndOfLineTrivia();
+                var newFirstAccessor = trackedFirstAccessor.WithLeadingTrivia(new[] { endOfLineTrivia }.Concat(firstAccesor.GetFirstToken().WithoutLeadingBlankLines().LeadingTrivia));
                 syntaxRoot = syntaxRoot.ReplaceNode(trackedFirstAccessor, newFirstAccessor);
             }
 

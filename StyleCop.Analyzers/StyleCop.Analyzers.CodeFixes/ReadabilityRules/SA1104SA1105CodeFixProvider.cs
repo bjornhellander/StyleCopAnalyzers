@@ -58,10 +58,11 @@ namespace StyleCop.Analyzers.ReadabilityRules
 
             var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxRoot.SyntaxTree, cancellationToken);
             var indentationTrivia = QueryIndentationHelpers.GetQueryIndentationTrivia(settings.Indentation, token);
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
 
             var precedingToken = token.GetPreviousToken();
             var triviaList = precedingToken.TrailingTrivia.AddRange(token.LeadingTrivia);
-            var processedTriviaList = triviaList.WithoutTrailingWhitespace().Add(SyntaxFactory.CarriageReturnLineFeed);
+            var processedTriviaList = triviaList.WithoutTrailingWhitespace().Add(endOfLineTrivia);
 
             var replaceMap = new Dictionary<SyntaxToken, SyntaxToken>()
             {

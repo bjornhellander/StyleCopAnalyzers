@@ -64,8 +64,9 @@ namespace StyleCop.Analyzers.ReadabilityRules
             var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxRoot.SyntaxTree, cancellationToken);
             var indentationSteps = IndentationHelper.GetIndentationSteps(settings.Indentation, attributeList);
             var indentationTrivia = IndentationHelper.GenerateWhitespaceTrivia(settings.Indentation, indentationSteps);
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
 
-            List<AttributeListSyntax> newAttributeLists = GetNewAttributeList(attributeList, indentationTrivia);
+            List<AttributeListSyntax> newAttributeLists = GetNewAttributeList(attributeList, indentationTrivia, endOfLineTrivia);
 
             var newSyntaxRoot = syntaxRoot.ReplaceNode(attributeList, newAttributeLists);
             var newDocument = document.WithSyntaxRoot(newSyntaxRoot.WithoutFormatting());
@@ -73,7 +74,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
             return newDocument;
         }
 
-        private static List<AttributeListSyntax> GetNewAttributeList(AttributeListSyntax attributeList, SyntaxTrivia indentationTrivia)
+        private static List<AttributeListSyntax> GetNewAttributeList(AttributeListSyntax attributeList, SyntaxTrivia indentationTrivia, SyntaxTrivia endOfLineTrivia)
         {
             var newAttributeLists = new List<AttributeListSyntax>();
 
@@ -90,7 +91,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
 
                 newAttributeList = (i == (attributeList.Attributes.Count - 1))
                     ? newAttributeList.WithTrailingTrivia(attributeList.GetTrailingTrivia())
-                    : newAttributeList.WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed);
+                    : newAttributeList.WithTrailingTrivia(endOfLineTrivia);
 
                 newAttributeLists.Add(newAttributeList);
             }
@@ -115,6 +116,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
 
                 var syntaxRoot = await document.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
                 var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxRoot.SyntaxTree, fixAllContext.CancellationToken);
+                var endOfLineTrivia = document.GetEndOfLineTrivia();
 
                 // 🐉 Need to eagerly evaluate this with ToList() to ensure nodes are not garbage collected between the
                 // call to TrackNodes and subsequent enumeration.
@@ -126,7 +128,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
                 {
                     var indentationSteps = IndentationHelper.GetIndentationSteps(settings.Indentation, attributeList);
                     var indentationTrivia = IndentationHelper.GenerateWhitespaceTrivia(settings.Indentation, indentationSteps);
-                    newRoot = newRoot.ReplaceNode(newRoot.GetCurrentNode(attributeList), GetNewAttributeList(attributeList, indentationTrivia));
+                    newRoot = newRoot.ReplaceNode(newRoot.GetCurrentNode(attributeList), GetNewAttributeList(attributeList, indentationTrivia, endOfLineTrivia));
                 }
 
                 return newRoot;

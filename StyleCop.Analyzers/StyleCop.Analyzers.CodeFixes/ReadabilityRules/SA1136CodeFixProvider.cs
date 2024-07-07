@@ -64,6 +64,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
             // determine the indentation for enum members (which is parent + 1 step)
             var parentIndentationSteps = IndentationHelper.GetIndentationSteps(settings.Indentation, enumDeclaration);
             var indentation = IndentationHelper.GenerateWhitespaceTrivia(settings.Indentation, parentIndentationSteps + 1);
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
 
             // combine all trivia between the separator and the enum member and place them after the separator, followed by a new line.
             var enumMemberDeclarationFirstToken = enumMemberDeclaration.GetFirstToken();
@@ -71,7 +72,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
 
             var newTrailingTrivia = SyntaxFactory.TriviaList(sharedTrivia)
                 .WithoutTrailingWhitespace()
-                .Add(SyntaxFactory.CarriageReturnLineFeed);
+                .Add(endOfLineTrivia);
 
             // replace the trivia for the tokens
             var replacements = new Dictionary<SyntaxToken, SyntaxToken>

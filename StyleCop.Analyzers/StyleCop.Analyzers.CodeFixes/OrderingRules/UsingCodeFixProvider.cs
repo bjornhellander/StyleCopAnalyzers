@@ -85,9 +85,10 @@ namespace StyleCop.Analyzers.OrderingRules
 
             var semanticModel = await document.GetSemanticModelAsync(cancellationToken).ConfigureAwait(false);
             var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, semanticModel.SyntaxTree, cancellationToken);
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
             var usingDirectivesPlacement = forcePreservePlacement ? UsingDirectivesPlacement.Preserve : DeterminePlacement(compilationUnit, settings);
 
-            var usingsHelper = new UsingsSorter(settings, semanticModel, compilationUnit, fileHeader);
+            var usingsHelper = new UsingsSorter(settings, endOfLineTrivia, semanticModel, compilationUnit, fileHeader);
             var usingsIndentation = DetermineIndentation(compilationUnit, settings.Indentation, usingDirectivesPlacement);
 
             // - The strategy is to strip all using directive that are not inside a conditional directive and replace them later with a sorted list at the correct spot

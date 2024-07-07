@@ -59,6 +59,8 @@ namespace StyleCop.Analyzers.LayoutRules
         {
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
+
             var documentationHeaders = diagnostics.Select(diagnostic => syntaxRoot.FindTrivia(diagnostic.Location.SourceSpan.Start)).ToArray();
             return syntaxRoot.ReplaceTokens(
                 documentationHeaders.Select(header => header.Token),
@@ -74,7 +76,7 @@ namespace StyleCop.Analyzers.LayoutRules
                         index--;
                     }
 
-                    var newLeadingTrivia = rewrittenToken.LeadingTrivia.Insert(index + 1, SyntaxFactory.CarriageReturnLineFeed);
+                    var newLeadingTrivia = rewrittenToken.LeadingTrivia.Insert(index + 1, endOfLineTrivia);
                     return rewrittenToken.WithLeadingTrivia(newLeadingTrivia);
                 });
         }

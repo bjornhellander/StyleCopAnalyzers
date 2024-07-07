@@ -57,11 +57,12 @@ namespace StyleCop.Analyzers.ReadabilityRules
 
         private static async Task<Document> GetTransformedDocumentAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxRoot.SyntaxTree, cancellationToken);
             var tokensToReplace = new Dictionary<SyntaxToken, SyntaxToken>();
 
-            AddTokensToReplaceToMap(tokensToReplace, syntaxRoot, diagnostic, settings);
+            AddTokensToReplaceToMap(tokensToReplace, syntaxRoot, diagnostic, settings, endOfLineTrivia);
 
             var newSyntaxRoot = syntaxRoot.ReplaceTokens(tokensToReplace.Keys, (original, rewritten) => tokensToReplace[original]);
             var newDocument = document.WithSyntaxRoot(newSyntaxRoot.WithoutFormatting());
@@ -69,7 +70,12 @@ namespace StyleCop.Analyzers.ReadabilityRules
             return newDocument;
         }
 
-        private static void AddTokensToReplaceToMap(Dictionary<SyntaxToken, SyntaxToken> tokensToReplace, SyntaxNode syntaxRoot, Diagnostic diagnostic, StyleCopSettings settings)
+        private static void AddTokensToReplaceToMap(
+            Dictionary<SyntaxToken, SyntaxToken> tokensToReplace,
+            SyntaxNode syntaxRoot,
+            Diagnostic diagnostic,
+            StyleCopSettings settings,
+            SyntaxTrivia endOfLineTrivia)
         {
             var attributeListSyntax = (AttributeListSyntax)syntaxRoot.FindNode(diagnostic.Location.SourceSpan);
 
@@ -83,7 +89,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
                 var token = attributeListSyntax.OpenBracketToken;
                 var prevToken = token.GetPreviousToken();
 
-                tokensToReplace[prevToken] = prevToken.WithTrailingTrivia(prevToken.TrailingTrivia.WithoutTrailingWhitespace().Add(SyntaxFactory.CarriageReturnLineFeed));
+                tokensToReplace[prevToken] = prevToken.WithTrailingTrivia(prevToken.TrailingTrivia.WithoutTrailingWhitespace().Add(endOfLineTrivia));
 
                 var newLeadingTrivia = token.LeadingTrivia.Insert(0, indentationTrivia);
                 tokensToReplace[token] = token.WithLeadingTrivia(newLeadingTrivia);
@@ -94,7 +100,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
                 var token = attributeListSyntax.CloseBracketToken;
                 var nextToken = token.GetNextToken();
 
-                tokensToReplace[token] = token.WithTrailingTrivia(token.TrailingTrivia.WithoutTrailingWhitespace().Add(SyntaxFactory.CarriageReturnLineFeed));
+                tokensToReplace[token] = token.WithTrailingTrivia(token.TrailingTrivia.WithoutTrailingWhitespace().Add(endOfLineTrivia));
 
                 var newLeadingTrivia = nextToken.LeadingTrivia.Insert(0, indentationTrivia);
                 tokensToReplace[nextToken] = nextToken.WithLeadingTrivia(newLeadingTrivia);
@@ -114,13 +120,14 @@ namespace StyleCop.Analyzers.ReadabilityRules
                     return null;
                 }
 
+                var endOfLineTrivia = document.GetEndOfLineTrivia();
                 var syntaxRoot = await document.GetSyntaxRootAsync(fixAllContext.CancellationToken).ConfigureAwait(false);
                 var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxRoot.SyntaxTree, fixAllContext.CancellationToken);
                 var tokensToReplace = new Dictionary<SyntaxToken, SyntaxToken>();
 
                 foreach (var diagnostic in diagnostics)
                 {
-                    AddTokensToReplaceToMap(tokensToReplace, syntaxRoot, diagnostic, settings);
+                    AddTokensToReplaceToMap(tokensToReplace, syntaxRoot, diagnostic, settings, endOfLineTrivia);
                 }
 
                 var newSyntaxRoot = syntaxRoot.ReplaceTokens(tokensToReplace.Keys, (original, rewritten) => tokensToReplace[original]);

@@ -106,6 +106,8 @@ namespace StyleCop.Analyzers.ReadabilityRules
             BaseFieldDeclarationSyntax previous = null;
             var newFieldDeclarations = new List<BaseFieldDeclarationSyntax>(variables.Count);
 
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
+
             foreach (SyntaxNodeOrToken nodeOrToken in variables.GetWithSeparators())
             {
                 if (previous == null)
@@ -134,7 +136,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
                             {
                             case SyntaxKind.SingleLineCommentTrivia:
                             case SyntaxKind.MultiLineCommentTrivia:
-                                triviaList = triviaList.Insert(0, SyntaxFactory.CarriageReturnLineFeed);
+                                triviaList = triviaList.Insert(0, endOfLineTrivia);
                                 break;
                             }
                         }

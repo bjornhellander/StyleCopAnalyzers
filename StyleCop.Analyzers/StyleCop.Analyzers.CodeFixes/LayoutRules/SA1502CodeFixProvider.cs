@@ -63,6 +63,7 @@ namespace StyleCop.Analyzers.LayoutRules
 
         private Document CreateCodeFix(Document document, IndentationSettings indentationSettings, Diagnostic diagnostic, SyntaxNode syntaxRoot)
         {
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
             SyntaxNode newSyntaxRoot = syntaxRoot;
             var node = syntaxRoot.FindNode(diagnostic.Location.SourceSpan);
 
@@ -74,59 +75,85 @@ namespace StyleCop.Analyzers.LayoutRules
             case SyntaxKindEx.RecordDeclaration:
             case SyntaxKindEx.RecordStructDeclaration:
             case SyntaxKind.EnumDeclaration:
-                newSyntaxRoot = this.RegisterBaseTypeDeclarationCodeFix(syntaxRoot, (BaseTypeDeclarationSyntax)node, indentationSettings);
+                newSyntaxRoot = this.RegisterBaseTypeDeclarationCodeFix(syntaxRoot, (BaseTypeDeclarationSyntax)node, indentationSettings, endOfLineTrivia);
                 break;
 
             case SyntaxKind.AccessorList:
-                newSyntaxRoot = this.RegisterPropertyLikeDeclarationCodeFix(syntaxRoot, (BasePropertyDeclarationSyntax)node.Parent, indentationSettings);
+                newSyntaxRoot = this.RegisterPropertyLikeDeclarationCodeFix(syntaxRoot, (BasePropertyDeclarationSyntax)node.Parent, indentationSettings, endOfLineTrivia);
                 break;
 
             case SyntaxKind.Block:
                 if (node.Parent.IsKind(SyntaxKindEx.LocalFunctionStatement))
                 {
-                    newSyntaxRoot = this.RegisterLocalFunctionStatementCodeFix(syntaxRoot, (LocalFunctionStatementSyntaxWrapper)node.Parent, indentationSettings);
+                    newSyntaxRoot = this.RegisterLocalFunctionStatementCodeFix(syntaxRoot, (LocalFunctionStatementSyntaxWrapper)node.Parent, indentationSettings, endOfLineTrivia);
                 }
                 else
                 {
-                    newSyntaxRoot = this.RegisterMethodLikeDeclarationCodeFix(syntaxRoot, (BaseMethodDeclarationSyntax)node.Parent, indentationSettings);
+                    newSyntaxRoot = this.RegisterMethodLikeDeclarationCodeFix(syntaxRoot, (BaseMethodDeclarationSyntax)node.Parent, indentationSettings, endOfLineTrivia);
                 }
 
                 break;
 
             case SyntaxKind.NamespaceDeclaration:
-                newSyntaxRoot = this.RegisterNamespaceDeclarationCodeFix(syntaxRoot, (NamespaceDeclarationSyntax)node, indentationSettings);
+                newSyntaxRoot = this.RegisterNamespaceDeclarationCodeFix(syntaxRoot, (NamespaceDeclarationSyntax)node, indentationSettings, endOfLineTrivia);
                 break;
             }
 
             return document.WithSyntaxRoot(newSyntaxRoot);
         }
 
-        private SyntaxNode RegisterBaseTypeDeclarationCodeFix(SyntaxNode syntaxRoot, BaseTypeDeclarationSyntax node, IndentationSettings indentationSettings)
+        private SyntaxNode RegisterBaseTypeDeclarationCodeFix(
+            SyntaxNode syntaxRoot,
+            BaseTypeDeclarationSyntax node,
+            IndentationSettings indentationSettings,
+            SyntaxTrivia endOfLineTrivia)
         {
-            return this.ReformatElement(syntaxRoot, node, node.OpenBraceToken, node.CloseBraceToken, indentationSettings);
+            return this.ReformatElement(syntaxRoot, node, node.OpenBraceToken, node.CloseBraceToken, indentationSettings, endOfLineTrivia);
         }
 
-        private SyntaxNode RegisterPropertyLikeDeclarationCodeFix(SyntaxNode syntaxRoot, BasePropertyDeclarationSyntax node, IndentationSettings indentationSettings)
+        private SyntaxNode RegisterPropertyLikeDeclarationCodeFix(
+            SyntaxNode syntaxRoot,
+            BasePropertyDeclarationSyntax node,
+            IndentationSettings indentationSettings,
+            SyntaxTrivia endOfLineTrivia)
         {
-            return this.ReformatElement(syntaxRoot, node, node.AccessorList.OpenBraceToken, node.AccessorList.CloseBraceToken, indentationSettings);
+            return this.ReformatElement(syntaxRoot, node, node.AccessorList.OpenBraceToken, node.AccessorList.CloseBraceToken, indentationSettings, endOfLineTrivia);
         }
 
-        private SyntaxNode RegisterMethodLikeDeclarationCodeFix(SyntaxNode syntaxRoot, BaseMethodDeclarationSyntax node, IndentationSettings indentationSettings)
+        private SyntaxNode RegisterMethodLikeDeclarationCodeFix(
+            SyntaxNode syntaxRoot,
+            BaseMethodDeclarationSyntax node,
+            IndentationSettings indentationSettings,
+            SyntaxTrivia endOfLineTrivia)
         {
-            return this.ReformatElement(syntaxRoot, node, node.Body.OpenBraceToken, node.Body.CloseBraceToken, indentationSettings);
+            return this.ReformatElement(syntaxRoot, node, node.Body.OpenBraceToken, node.Body.CloseBraceToken, indentationSettings, endOfLineTrivia);
         }
 
-        private SyntaxNode RegisterLocalFunctionStatementCodeFix(SyntaxNode syntaxRoot, LocalFunctionStatementSyntaxWrapper node, IndentationSettings indentationSettings)
+        private SyntaxNode RegisterLocalFunctionStatementCodeFix(
+            SyntaxNode syntaxRoot,
+            LocalFunctionStatementSyntaxWrapper node,
+            IndentationSettings indentationSettings,
+            SyntaxTrivia endOfLineTrivia)
         {
-            return this.ReformatElement(syntaxRoot, node, node.Body.OpenBraceToken, node.Body.CloseBraceToken, indentationSettings);
+            return this.ReformatElement(syntaxRoot, node, node.Body.OpenBraceToken, node.Body.CloseBraceToken, indentationSettings, endOfLineTrivia);
         }
 
-        private SyntaxNode RegisterNamespaceDeclarationCodeFix(SyntaxNode syntaxRoot, NamespaceDeclarationSyntax node, IndentationSettings indentationSettings)
+        private SyntaxNode RegisterNamespaceDeclarationCodeFix(
+            SyntaxNode syntaxRoot,
+            NamespaceDeclarationSyntax node,
+            IndentationSettings indentationSettings,
+            SyntaxTrivia endOfLineTrivia)
         {
-            return this.ReformatElement(syntaxRoot, node, node.OpenBraceToken, node.CloseBraceToken, indentationSettings);
+            return this.ReformatElement(syntaxRoot, node, node.OpenBraceToken, node.CloseBraceToken, indentationSettings, endOfLineTrivia);
         }
 
-        private SyntaxNode ReformatElement(SyntaxNode syntaxRoot, SyntaxNode element, SyntaxToken openBraceToken, SyntaxToken closeBraceToken, IndentationSettings indentationSettings)
+        private SyntaxNode ReformatElement(
+            SyntaxNode syntaxRoot,
+            SyntaxNode element,
+            SyntaxToken openBraceToken,
+            SyntaxToken closeBraceToken,
+            IndentationSettings indentationSettings,
+            SyntaxTrivia endOfLineTrivia)
         {
             var tokenSubstitutions = new Dictionary<SyntaxToken, SyntaxToken>();
 
@@ -138,8 +165,8 @@ namespace StyleCop.Analyzers.LayoutRules
             if (parentEndLine == blockStartLine)
             {
                 var newTrailingTrivia = parentLastToken.TrailingTrivia
-                .WithoutTrailingWhitespace()
-                .Add(SyntaxFactory.CarriageReturnLineFeed);
+                    .WithoutTrailingWhitespace()
+                    .Add(endOfLineTrivia);
 
                 tokenSubstitutions.Add(parentLastToken, parentLastToken.WithTrailingTrivia(newTrailingTrivia));
             }
@@ -149,7 +176,7 @@ namespace StyleCop.Analyzers.LayoutRules
             var contentIndentationString = IndentationHelper.GenerateIndentationString(indentationSettings, parentIndentationLevel + 1);
 
             // reformat opening brace
-            tokenSubstitutions.Add(openBraceToken, this.FormatBraceToken(openBraceToken, indentationString));
+            tokenSubstitutions.Add(openBraceToken, this.FormatBraceToken(openBraceToken, indentationString, endOfLineTrivia));
 
             // reformat start of content
             var startOfContentToken = openBraceToken.GetNextToken();
@@ -168,7 +195,7 @@ namespace StyleCop.Analyzers.LayoutRules
             {
                 var newEndOfContentTokenTrailingTrivia = endOfContentToken.TrailingTrivia
                     .WithoutTrailingWhitespace()
-                    .Add(SyntaxFactory.CarriageReturnLineFeed);
+                    .Add(endOfLineTrivia);
 
                 // check if the token already exists (occurs when there is only one token in the block)
                 if (tokenSubstitutions.ContainsKey(endOfContentToken))
@@ -182,7 +209,7 @@ namespace StyleCop.Analyzers.LayoutRules
             }
 
             // reformat closing brace
-            tokenSubstitutions.Add(closeBraceToken, this.FormatBraceToken(closeBraceToken, indentationString));
+            tokenSubstitutions.Add(closeBraceToken, this.FormatBraceToken(closeBraceToken, indentationString, endOfLineTrivia));
 
             var rewriter = new TokenRewriter(tokenSubstitutions);
             var newSyntaxRoot = rewriter.Visit(syntaxRoot);
@@ -190,7 +217,7 @@ namespace StyleCop.Analyzers.LayoutRules
             return newSyntaxRoot;
         }
 
-        private SyntaxToken FormatBraceToken(SyntaxToken braceToken, string indentationString)
+        private SyntaxToken FormatBraceToken(SyntaxToken braceToken, string indentationString, SyntaxTrivia endOfLineTrivia)
         {
             var newBraceTokenLeadingTrivia = braceToken.LeadingTrivia
                 .WithoutTrailingWhitespace()
@@ -202,7 +229,7 @@ namespace StyleCop.Analyzers.LayoutRules
             // only add an end-of-line to the brace if there is none yet.
             if ((newBraceTokenTrailingTrivia.Count == 0) || !newBraceTokenTrailingTrivia.Last().IsKind(SyntaxKind.EndOfLineTrivia))
             {
-                newBraceTokenTrailingTrivia = newBraceTokenTrailingTrivia.Add(SyntaxFactory.CarriageReturnLineFeed);
+                newBraceTokenTrailingTrivia = newBraceTokenTrailingTrivia.Add(endOfLineTrivia);
             }
 
             return braceToken

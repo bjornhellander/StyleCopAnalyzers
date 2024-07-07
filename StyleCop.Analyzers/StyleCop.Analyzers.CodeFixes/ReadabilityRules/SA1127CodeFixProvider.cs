@@ -64,12 +64,13 @@ namespace StyleCop.Analyzers.ReadabilityRules
             var parentIndentation = GetParentIndentation(whereToken);
             var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxRoot.SyntaxTree, cancellationToken);
             var indentationTrivia = SyntaxFactory.Whitespace(parentIndentation + IndentationHelper.GenerateIndentationString(settings.Indentation, 1));
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
 
             var replaceMap = new Dictionary<SyntaxToken, SyntaxToken>()
             {
-                [precedingToken] = precedingToken.WithTrailingTrivia(SyntaxFactory.CarriageReturnLineFeed),
+                [precedingToken] = precedingToken.WithTrailingTrivia(endOfLineTrivia),
                 [whereToken] = whereToken.WithLeadingTrivia(indentationTrivia),
-                [endToken] = endToken.WithTrailingTrivia(RemoveUnnecessaryWhitespaceTrivia(endToken).Add(SyntaxFactory.CarriageReturnLineFeed)),
+                [endToken] = endToken.WithTrailingTrivia(RemoveUnnecessaryWhitespaceTrivia(endToken).Add(endOfLineTrivia)),
             };
 
             if (afterEndToken.IsKind(SyntaxKind.EqualsGreaterThanToken))

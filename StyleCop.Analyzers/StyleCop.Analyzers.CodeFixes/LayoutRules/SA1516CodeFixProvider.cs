@@ -93,21 +93,22 @@ namespace StyleCop.Analyzers.LayoutRules
 
             // Using the token replacement here to use the same strategy as the FixAll.
             var firstToken = node.GetFirstToken();
-            var newToken = ProcessToken(firstToken, insertBlankLine);
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
+            var newToken = ProcessToken(firstToken, insertBlankLine, endOfLineTrivia);
             var newSyntaxRoot = syntaxRoot.ReplaceToken(firstToken, newToken);
             var newDocument = document.WithSyntaxRoot(newSyntaxRoot);
 
             return Task.FromResult(newDocument);
         }
 
-        private static SyntaxToken ProcessToken(SyntaxToken token, bool insertBlankLine)
+        private static SyntaxToken ProcessToken(SyntaxToken token, bool insertBlankLine, SyntaxTrivia endOfLineTrivia)
         {
             var leadingTrivia = token.LeadingTrivia;
             SyntaxTriviaList newLeadingTrivia;
 
             if (insertBlankLine)
             {
-                newLeadingTrivia = leadingTrivia.Insert(0, SyntaxFactory.CarriageReturnLineFeed);
+                newLeadingTrivia = leadingTrivia.Insert(0, endOfLineTrivia);
             }
             else
             {
@@ -183,6 +184,8 @@ namespace StyleCop.Analyzers.LayoutRules
                 // Using token replacement, because node replacement will do nothing when replacing child nodes from a replaced parent node.
                 Dictionary<SyntaxToken, SyntaxToken> replaceMap = new Dictionary<SyntaxToken, SyntaxToken>();
 
+                var endOfLineTrivia = document.GetEndOfLineTrivia();
+
                 foreach (var diagnostic in diagnostics)
                 {
                     var insertBlankLine = DetermineCodeFixAction(diagnostic);
@@ -198,7 +201,7 @@ namespace StyleCop.Analyzers.LayoutRules
                     {
                         var firstToken = node.GetFirstToken();
 
-                        replaceMap[firstToken] = ProcessToken(firstToken, insertBlankLine.Value);
+                        replaceMap[firstToken] = ProcessToken(firstToken, insertBlankLine.Value, endOfLineTrivia);
                     }
                 }
 

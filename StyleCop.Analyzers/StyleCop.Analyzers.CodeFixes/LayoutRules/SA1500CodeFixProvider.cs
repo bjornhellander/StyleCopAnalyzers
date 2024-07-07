@@ -59,14 +59,18 @@ namespace StyleCop.Analyzers.LayoutRules
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
             var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxRoot.SyntaxTree, cancellationToken);
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
             var braceToken = syntaxRoot.FindToken(diagnostic.Location.SourceSpan.Start);
-            var tokenReplacements = GenerateBraceFixes(settings, ImmutableArray.Create(braceToken));
+            var tokenReplacements = GenerateBraceFixes(settings, endOfLineTrivia, ImmutableArray.Create(braceToken));
 
             var newSyntaxRoot = syntaxRoot.ReplaceTokens(tokenReplacements.Keys, (originalToken, rewrittenToken) => tokenReplacements[originalToken]);
             return document.WithSyntaxRoot(newSyntaxRoot);
         }
 
-        private static Dictionary<SyntaxToken, SyntaxToken> GenerateBraceFixes(StyleCopSettings settings, ImmutableArray<SyntaxToken> braceTokens)
+        private static Dictionary<SyntaxToken, SyntaxToken> GenerateBraceFixes(
+            StyleCopSettings settings,
+            SyntaxTrivia endOfLineTrivia,
+            ImmutableArray<SyntaxToken> braceTokens)
         {
             var tokenReplacements = new Dictionary<SyntaxToken, SyntaxToken>();
 
@@ -100,7 +104,7 @@ namespace StyleCop.Analyzers.LayoutRules
                             var previousTokenNewTrailingTrivia = previousToken.TrailingTrivia
                             .WithoutTrailingWhitespace()
                             .AddRange(sharedTrivia)
-                            .Add(SyntaxFactory.CarriageReturnLineFeed);
+                            .Add(endOfLineTrivia);
 
                             AddReplacement(tokenReplacements, previousToken, previousToken.WithTrailingTrivia(previousTokenNewTrailingTrivia));
                         }
@@ -127,7 +131,7 @@ namespace StyleCop.Analyzers.LayoutRules
                         var newTrailingTrivia = braceReplacementToken.TrailingTrivia
                             .WithoutTrailingWhitespace()
                             .AddRange(sharedTrivia)
-                            .Add(SyntaxFactory.CarriageReturnLineFeed);
+                            .Add(endOfLineTrivia);
 
                         if (!braceTokens.Contains(nextToken))
                         {
@@ -291,8 +295,9 @@ namespace StyleCop.Analyzers.LayoutRules
                     .ToImmutableArray();
 
                 var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxRoot.SyntaxTree, fixAllContext.CancellationToken);
+                var endOfLineTrivia = fixAllContext.Document.GetEndOfLineTrivia();
 
-                var tokenReplacements = GenerateBraceFixes(settings, tokens);
+                var tokenReplacements = GenerateBraceFixes(settings, endOfLineTrivia, tokens);
 
                 return syntaxRoot.ReplaceTokens(tokenReplacements.Keys, (originalToken, rewrittenToken) => tokenReplacements[originalToken]);
             }

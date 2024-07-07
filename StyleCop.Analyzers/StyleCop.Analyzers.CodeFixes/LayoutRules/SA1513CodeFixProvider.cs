@@ -60,6 +60,7 @@ namespace StyleCop.Analyzers.LayoutRules
 
         private static async Task<SyntaxNode> GetTransformedDocumentAsync(Document document, ImmutableArray<Diagnostic> diagnostics, CancellationToken cancellationToken)
         {
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
             var root = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
             return root.ReplaceTokens(
                 diagnostics.Select(diagnostic => root.FindToken(diagnostic.Location.SourceSpan.End)),

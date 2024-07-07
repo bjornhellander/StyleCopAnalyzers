@@ -122,6 +122,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
 
             var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, syntaxRoot.SyntaxTree, cancellationToken);
             var indentationTrivia = QueryIndentationHelpers.GetQueryIndentationTrivia(settings.Indentation, queryExpression);
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
 
             for (var i = 1; i < nodeList.Length; i++)
             {
@@ -131,7 +132,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
                 if (precedingToken.GetLine() == token.GetLine())
                 {
                     var triviaList = precedingToken.TrailingTrivia.AddRange(token.LeadingTrivia);
-                    var processedTriviaList = triviaList.WithoutTrailingWhitespace().Add(SyntaxFactory.CarriageReturnLineFeed);
+                    var processedTriviaList = triviaList.WithoutTrailingWhitespace().Add(endOfLineTrivia);
 
                     replaceMap.Add(precedingToken, precedingToken.WithTrailingTrivia(processedTriviaList));
                     replaceMap.Add(token, token.WithLeadingTrivia(indentationTrivia));

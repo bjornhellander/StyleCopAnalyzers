@@ -73,9 +73,10 @@ namespace StyleCop.Analyzers.ReadabilityRules
             }
 
             var settings = SettingsHelper.GetStyleCopSettings(document.Project.AnalyzerOptions, tree, cancellationToken);
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
             SyntaxTriviaList newTrivia =
                 SyntaxFactory.TriviaList(
-                    SyntaxFactory.CarriageReturnLineFeed,
+                    endOfLineTrivia,
                     SyntaxFactory.Whitespace(lineText.Substring(0, indentLength) + IndentationHelper.GenerateIndentationString(settings.Indentation, 1)));
 
             SyntaxToken updatedToken = originalToken.WithLeadingTrivia(originalToken.LeadingTrivia.AddRange(newTrivia));

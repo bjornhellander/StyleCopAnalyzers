@@ -27,6 +27,7 @@ namespace StyleCop.Analyzers.OrderingRules
         /// </summary>
         private class UsingsSorter
         {
+            private readonly SyntaxTrivia endOfLineTrivia;
             private readonly SemanticModel semanticModel;
             private readonly ImmutableArray<SyntaxTrivia> fileHeader;
             private readonly bool separateSystemDirectives;
@@ -40,11 +41,16 @@ namespace StyleCop.Analyzers.OrderingRules
             private readonly Dictionary<TreeTextSpan, List<UsingDirectiveSyntax>> systemStaticImports = new Dictionary<TreeTextSpan, List<UsingDirectiveSyntax>>();
             private readonly Dictionary<TreeTextSpan, List<UsingDirectiveSyntax>> staticImports = new Dictionary<TreeTextSpan, List<UsingDirectiveSyntax>>();
 
-            public UsingsSorter(StyleCopSettings settings, SemanticModel semanticModel, CompilationUnitSyntax compilationUnit, ImmutableArray<SyntaxTrivia> fileHeader)
+            public UsingsSorter(
+                StyleCopSettings settings,
+                SyntaxTrivia endOfLineTrivia,
+                SemanticModel semanticModel,
+                CompilationUnitSyntax compilationUnit,
+                ImmutableArray<SyntaxTrivia> fileHeader)
             {
                 this.separateSystemDirectives = settings.OrderingRules.SystemUsingDirectivesFirst;
                 this.insertBlankLinesBetweenGroups = settings.OrderingRules.BlankLinesBetweenUsingGroups == OptionSetting.Require;
-
+                this.endOfLineTrivia = endOfLineTrivia;
                 this.semanticModel = semanticModel;
                 this.fileHeader = fileHeader;
 
@@ -112,13 +118,13 @@ namespace StyleCop.Analyzers.OrderingRules
                 if (withLeadingBlankLine && usingList.Count > 0)
                 {
                     var firstUsing = usingList[0];
-                    usingList[0] = firstUsing.WithLeadingTrivia(firstUsing.GetLeadingTrivia().Insert(0, SyntaxFactory.CarriageReturnLineFeed));
+                    usingList[0] = firstUsing.WithLeadingTrivia(firstUsing.GetLeadingTrivia().Insert(0, this.endOfLineTrivia));
                 }
 
                 if (withTrailingBlankLine && (usingList.Count > 0))
                 {
                     var lastUsing = usingList[usingList.Count - 1];
-                    usingList[usingList.Count - 1] = lastUsing.WithTrailingTrivia(lastUsing.GetTrailingTrivia().Add(SyntaxFactory.CarriageReturnLineFeed));
+                    usingList[usingList.Count - 1] = lastUsing.WithTrailingTrivia(lastUsing.GetTrailingTrivia().Add(this.endOfLineTrivia));
                 }
 
                 return SyntaxFactory.List(usingList);
@@ -144,13 +150,13 @@ namespace StyleCop.Analyzers.OrderingRules
                 if (withLeadingBlankLine && usingList.Count > 0)
                 {
                     var firstUsing = usingList[0];
-                    usingList[0] = firstUsing.WithLeadingTrivia(firstUsing.GetLeadingTrivia().Insert(0, SyntaxFactory.CarriageReturnLineFeed));
+                    usingList[0] = firstUsing.WithLeadingTrivia(firstUsing.GetLeadingTrivia().Insert(0, this.endOfLineTrivia));
                 }
 
                 if (withTrailingBlankLine && (usingList.Count > 0))
                 {
                     var lastUsing = usingList[usingList.Count - 1];
-                    usingList[usingList.Count - 1] = lastUsing.WithTrailingTrivia(lastUsing.GetTrailingTrivia().Add(SyntaxFactory.CarriageReturnLineFeed));
+                    usingList[usingList.Count - 1] = lastUsing.WithTrailingTrivia(lastUsing.GetTrailingTrivia().Add(this.endOfLineTrivia));
                 }
 
                 return SyntaxFactory.List(usingList);
@@ -322,7 +328,7 @@ namespace StyleCop.Analyzers.OrderingRules
                     var newTrailingTrivia = currentTrailingTrivia;
                     if (!currentTrailingTrivia.Any() || !currentTrailingTrivia.Last().IsKind(SyntaxKind.EndOfLineTrivia))
                     {
-                        newTrailingTrivia = newTrailingTrivia.Add(SyntaxFactory.CarriageReturnLineFeed);
+                        newTrailingTrivia = newTrailingTrivia.Add(this.endOfLineTrivia);
                     }
 
                     var processedUsing = (qualifyNames ? this.QualifyUsingDirective(currentUsing) : currentUsing)
@@ -339,7 +345,7 @@ namespace StyleCop.Analyzers.OrderingRules
                 {
                     var last = result[result.Count - 1];
 
-                    result[result.Count - 1] = last.WithTrailingTrivia(last.GetTrailingTrivia().Add(SyntaxFactory.CarriageReturnLineFeed));
+                    result[result.Count - 1] = last.WithTrailingTrivia(last.GetTrailingTrivia().Add(this.endOfLineTrivia));
                 }
 
                 return result;

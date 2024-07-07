@@ -54,11 +54,13 @@ namespace StyleCop.Analyzers.LayoutRules
         {
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
 
+            var endOfLineTrivia = document.GetEndOfLineTrivia();
+
             var singleLineComment = syntaxRoot.FindTrivia(diagnostic.Location.SourceSpan.Start);
             var commentArray = new[] { singleLineComment };
 
-            var leadingTrivia = FixTriviaList(singleLineComment.Token.LeadingTrivia, commentArray);
-            var trailingTrivia = FixTriviaList(singleLineComment.Token.TrailingTrivia, commentArray);
+            var leadingTrivia = FixTriviaList(singleLineComment.Token.LeadingTrivia, commentArray, endOfLineTrivia);
+            var trailingTrivia = FixTriviaList(singleLineComment.Token.TrailingTrivia, commentArray, endOfLineTrivia);
 
             var newToken = singleLineComment.Token
                 .WithLeadingTrivia(leadingTrivia)
@@ -69,7 +71,10 @@ namespace StyleCop.Analyzers.LayoutRules
             return document.WithSyntaxRoot(newSyntaxRoot);
         }
 
-        private static SyntaxTriviaList FixTriviaList(SyntaxTriviaList triviaList, IEnumerable<SyntaxTrivia> commentTrivias)
+        private static SyntaxTriviaList FixTriviaList(
+            SyntaxTriviaList triviaList,
+            IEnumerable<SyntaxTrivia> commentTrivias,
+            SyntaxTrivia endOfLineTrivia)
         {
             foreach (var singleLineComment in commentTrivias)
             {
@@ -89,7 +94,7 @@ namespace StyleCop.Analyzers.LayoutRules
                         break;
 
                     default:
-                        triviaList = triviaList.ReplaceRange(triviaList[index], new[] { triviaList[index], SyntaxFactory.CarriageReturnLineFeed });
+                        triviaList = triviaList.ReplaceRange(triviaList[index], new[] { triviaList[index], endOfLineTrivia });
 
                         // We found the trivia so we don't have to loop any longer
                         index = -2;
@@ -99,7 +104,7 @@ namespace StyleCop.Analyzers.LayoutRules
 
                 if (index == -1)
                 {
-                    triviaList = triviaList.ReplaceRange(triviaList[0], new[] { SyntaxFactory.CarriageReturnLineFeed, triviaList[0] });
+                    triviaList = triviaList.ReplaceRange(triviaList[0], new[] { endOfLineTrivia, triviaList[0] });
                 }
             }
 
@@ -123,6 +128,8 @@ namespace StyleCop.Analyzers.LayoutRules
 
                 var syntaxRoot = await document.GetSyntaxRootAsync().ConfigureAwait(false);
 
+                var endOfLineTrivia = document.GetEndOfLineTrivia();
+
                 List<SyntaxTrivia> trivias = new List<SyntaxTrivia>();
 
                 foreach (var diagnostic in diagnostics)
@@ -137,8 +144,8 @@ namespace StyleCop.Analyzers.LayoutRules
                 foreach (var tokenWithTrivia in tokensWithTrivia)
                 {
                     var token = tokenWithTrivia.Key;
-                    var newLeadingTrivia = FixTriviaList(token.LeadingTrivia, tokenWithTrivia);
-                    var newTrailingTrivia = FixTriviaList(token.TrailingTrivia, tokenWithTrivia);
+                    var newLeadingTrivia = FixTriviaList(token.LeadingTrivia, tokenWithTrivia, endOfLineTrivia);
+                    var newTrailingTrivia = FixTriviaList(token.TrailingTrivia, tokenWithTrivia, endOfLineTrivia);
 
                     replacements.Add(token, token.WithLeadingTrivia(newLeadingTrivia).WithTrailingTrivia(newTrailingTrivia));
                 }
