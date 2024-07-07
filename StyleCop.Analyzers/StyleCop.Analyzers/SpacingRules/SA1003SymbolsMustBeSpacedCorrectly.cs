@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#nullable disable
-
 namespace StyleCop.Analyzers.SpacingRules
 {
     using System;
@@ -103,7 +101,8 @@ namespace StyleCop.Analyzers.SpacingRules
                 SyntaxKind.LogicalNotExpression,
                 SyntaxKind.PreIncrementExpression,
                 SyntaxKind.PreDecrementExpression,
-                SyntaxKind.AddressOfExpression);
+                SyntaxKind.AddressOfExpression,
+                SyntaxKindEx.IndexExpression);
 
         private static readonly ImmutableArray<SyntaxKind> PostfixUnaryExpressionKinds =
             ImmutableArray.Create(
@@ -381,7 +380,7 @@ namespace StyleCop.Analyzers.SpacingRules
             CheckToken(context, arrowExpressionClause.ArrowToken, true, true, true);
         }
 
-        private static void CheckToken(SyntaxNodeAnalysisContext context, SyntaxToken token, bool withLeadingWhitespace, bool allowAtEndOfLine, bool withTrailingWhitespace, string tokenText = null)
+        private static void CheckToken(SyntaxNodeAnalysisContext context, SyntaxToken token, bool withLeadingWhitespace, bool allowAtEndOfLine, bool withTrailingWhitespace, string? tokenText = null)
         {
             tokenText = tokenText ?? token.Text;
 

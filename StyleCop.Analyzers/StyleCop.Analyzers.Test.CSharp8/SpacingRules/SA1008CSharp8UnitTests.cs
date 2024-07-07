@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Tunnel Vision Laboratories, LLC. All Rights Reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-#nullable disable
-
 namespace StyleCop.Analyzers.Test.CSharp8.SpacingRules
 {
     using System.Threading;
@@ -193,6 +191,92 @@ internal class TestClass
                 expectedResults,
                 fixedCode,
                 CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Fact]
+        [WorkItem(3008, "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/3008")]
+        public async Task InvocationUsingIndexFromEndOperatorAsync()
+        {
+            var testCode = @"
+namespace TestNamespace
+{
+    public class TestClass
+    {
+        public void TestMethod(int[] a)
+        {
+            M[|(|] ^1);
+        }
+
+        private void M(System.Index index)
+        {
+        }
+    }
+}
+";
+
+            var fixedCode = @"
+namespace TestNamespace
+{
+    public class TestClass
+    {
+        public void TestMethod(int[] a)
+        {
+            M(^1);
+        }
+
+        private void M(System.Index index)
+        {
+        }
+    }
+}
+";
+
+            await VerifyCSharpFixAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, fixedCode, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        [Theory]
+        [InlineData("0..1")]
+        [InlineData("..1")]
+        [InlineData("0..")]
+        [InlineData("..")]
+        [WorkItem(3008, "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/3008")]
+        public async Task InvocationUsingRangeOperatorAsync(string expr)
+        {
+            var testCode = $@"
+namespace TestNamespace
+{{
+    public class TestClass
+    {{
+        public void TestMethod()
+        {{
+            M[|(|] {expr});
+        }}
+
+        private void M(System.Range range)
+        {{
+        }}
+    }}
+}}
+";
+
+            var fixedCode = $@"
+namespace TestNamespace
+{{
+    public class TestClass
+    {{
+        public void TestMethod()
+        {{
+            M({expr});
+        }}
+
+        private void M(System.Range range)
+        {{
+        }}
+    }}
+}}
+";
+
+            await VerifyCSharpFixAsync(testCode, DiagnosticResult.EmptyDiagnosticResults, fixedCode, CancellationToken.None).ConfigureAwait(false);
         }
     }
 }
