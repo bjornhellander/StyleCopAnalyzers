@@ -25,11 +25,11 @@ namespace StyleCop.Analyzers.Test.CSharp7.SpacingRules
 
             string statementWithSpace = @"int.TryParse(""0"", out @Int32 x);";
 
-            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace).ConfigureAwait(false);
+            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace).ConfigureAwait(true);
 
             DiagnosticResult expected = Diagnostic().WithArguments("out", string.Empty, "followed").WithLocation(12, 31);
 
-            await this.TestKeywordStatementAsync(statementWithoutSpace, expected, statementWithSpace).ConfigureAwait(false);
+            await this.TestKeywordStatementAsync(statementWithoutSpace, expected, statementWithSpace).ConfigureAwait(true);
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace StyleCop.Analyzers.Test.CSharp7.SpacingRules
         {
             string statementWithSpace = @"int.TryParse(""0"", out var _);";
 
-            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace).ConfigureAwait(false);
+            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace).ConfigureAwait(true);
         }
 
         [Fact]
@@ -47,7 +47,7 @@ namespace StyleCop.Analyzers.Test.CSharp7.SpacingRules
         {
             string statementWithSpace = @"int.TryParse(""0"", out _);";
 
-            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace).ConfigureAwait(false);
+            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace).ConfigureAwait(true);
         }
 
         [Fact]
@@ -57,11 +57,11 @@ namespace StyleCop.Analyzers.Test.CSharp7.SpacingRules
 
             string statementWithSpace = @"var (a, b) = (2, 3);";
 
-            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace).ConfigureAwait(false);
+            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace).ConfigureAwait(true);
 
             DiagnosticResult expected = Diagnostic().WithArguments("var", string.Empty, "followed").WithLocation(12, 13);
 
-            await this.TestKeywordStatementAsync(statementWithoutSpace, expected, statementWithSpace).ConfigureAwait(false);
+            await this.TestKeywordStatementAsync(statementWithoutSpace, expected, statementWithSpace).ConfigureAwait(true);
         }
 
         [Fact]
@@ -83,7 +83,7 @@ ref @Int32 Call(ref @Int32 p)
     => ref @p;
 ";
 
-            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace).ConfigureAwait(false);
+            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace).ConfigureAwait(true);
 
             DiagnosticResult[] expected =
             {
@@ -95,7 +95,7 @@ ref @Int32 Call(ref @Int32 p)
                 Diagnostic().WithArguments("ref", string.Empty, "followed").WithLocation(17, 8),
             };
 
-            await this.TestKeywordStatementAsync(statementWithoutSpace, expected, statementWithSpace).ConfigureAwait(false);
+            await this.TestKeywordStatementAsync(statementWithoutSpace, expected, statementWithSpace).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace TestNamespace
                 Diagnostic().WithArguments("return", string.Empty, "followed").WithLocation(11, 43),
             };
 
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace TestNamespace
                 Diagnostic().WithArguments("new", string.Empty, "followed").WithLocation(8, 21),
             };
 
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace TestNamespace
                 Diagnostic().WithArguments("foreach", string.Empty, "followed").WithLocation(8, 13),
             };
 
-            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(true);
         }
 
         [Fact]
@@ -247,10 +247,10 @@ namespace TestNamespace
 
             string statementWithSpace = @"int* x = stackalloc [] { 3 };";
 
-            await this.TestKeywordStatementAsync(statementWithoutSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithoutSpace, languageVersion: LanguageVersion.CSharp7_3.OrLaterDefault()).ConfigureAwait(false);
+            await this.TestKeywordStatementAsync(statementWithoutSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithoutSpace, languageVersion: LanguageVersion.CSharp7_3.OrLaterDefault()).ConfigureAwait(true);
 
             // this case is handled by SA1026, so it shouldn't be reported here
-            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace, languageVersion: LanguageVersion.CSharp7_3.OrLaterDefault()).ConfigureAwait(false);
+            await this.TestKeywordStatementAsync(statementWithSpace, DiagnosticResult.EmptyDiagnosticResults, statementWithSpace, languageVersion: LanguageVersion.CSharp7_3.OrLaterDefault()).ConfigureAwait(true);
         }
     }
 }

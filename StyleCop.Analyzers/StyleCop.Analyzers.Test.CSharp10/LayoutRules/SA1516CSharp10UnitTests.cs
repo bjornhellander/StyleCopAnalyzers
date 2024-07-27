@@ -40,7 +40,7 @@ using a = System.Collections;
 namespace Foo;
 ";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ using System.Linq;
 using a = System.Collections;
 ";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ public enum Foobar
 }
 ";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ public enum Foobar
 }
 ";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ public enum Foobar
 extern alias corlib;
 ";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ using System.Linq;
 using a = System.Collections;
 ";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ public enum Foobar
 }
 ";
 
-            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(false);
+            await VerifyCSharpFixAsync(testCode, fixedCode).ConfigureAwait(true);
         }
 
         private static Task VerifyCSharpFixAsync(string testCode, string fixedCode)

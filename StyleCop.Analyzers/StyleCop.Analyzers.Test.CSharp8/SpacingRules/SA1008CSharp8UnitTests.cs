@@ -75,7 +75,7 @@ namespace TestNamespace
                     Diagnostic(DescriptorNotPreceded).WithLocation(1),
                 },
                 FixedCode = fixedCode,
-            }.RunAsync(CancellationToken.None).ConfigureAwait(false);
+            }.RunAsync(CancellationToken.None).ConfigureAwait(true);
         }
 
         [Fact]
@@ -110,7 +110,7 @@ class C
                 testCode,
                 expectedResults,
                 fixedCode,
-                CancellationToken.None).ConfigureAwait(false);
+                CancellationToken.None).ConfigureAwait(true);
         }
 
         [Fact]
@@ -147,7 +147,7 @@ class C
                 testCode,
                 expectedResults,
                 fixedCode,
-                CancellationToken.None).ConfigureAwait(false);
+                CancellationToken.None).ConfigureAwait(true);
         }
 
         [Fact]
@@ -192,7 +192,7 @@ internal class TestClass
                 testCode,
                 expectedResults,
                 fixedCode,
-                CancellationToken.None).ConfigureAwait(false);
+                CancellationToken.None).ConfigureAwait(true);
         }
     }
 }

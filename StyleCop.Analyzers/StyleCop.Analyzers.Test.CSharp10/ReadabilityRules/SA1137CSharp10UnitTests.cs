@@ -164,7 +164,7 @@ using System;
 class MyAttribute : Attribute {{ }}
 ",
                 },
-            }.RunAsync(CancellationToken.None).ConfigureAwait(false);
+            }.RunAsync(CancellationToken.None).ConfigureAwait(true);
         }
     }
 }

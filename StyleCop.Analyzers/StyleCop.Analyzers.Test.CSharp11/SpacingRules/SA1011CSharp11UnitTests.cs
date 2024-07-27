@@ -51,7 +51,7 @@ namespace StyleCop.Analyzers.Test.CSharp11.SpacingRules
                     Diagnostic().WithLocation(0).WithArguments(" not", "followed"),
                 },
                 FixedCode = fixedCode,
-            }.RunAsync(CancellationToken.None).ConfigureAwait(false);
+            }.RunAsync(CancellationToken.None).ConfigureAwait(true);
         }
     }
 }
