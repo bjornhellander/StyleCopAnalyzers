@@ -51,6 +51,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
         private static readonly Action<SyntaxNodeAnalysisContext> AnonymousObjectCreationExpressionAction = HandleAnonymousObjectCreationExpression;
         private static readonly Action<SyntaxNodeAnalysisContext> TupleTypeAction = HandleTupleType;
         private static readonly Action<SyntaxNodeAnalysisContext> TupleExpressionAction = HandleTupleExpression;
+        private static readonly Action<SyntaxNodeAnalysisContext> CollectionExpressionAction = HandleCollectionExpression;
 
         /// <inheritdoc/>
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get; } =
@@ -80,6 +81,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
             context.RegisterSyntaxNodeAction(AnonymousObjectCreationExpressionAction, SyntaxKind.AnonymousObjectCreationExpression);
             context.RegisterSyntaxNodeAction(TupleTypeAction, SyntaxKindEx.TupleType);
             context.RegisterSyntaxNodeAction(TupleExpressionAction, SyntaxKindEx.TupleExpression);
+            context.RegisterSyntaxNodeAction(CollectionExpressionAction, SyntaxKindEx.CollectionExpression);
         }
 
         private static void HandleCompilationUnit(SyntaxNodeAnalysisContext context)
@@ -268,6 +270,14 @@ namespace StyleCop.Analyzers.ReadabilityRules
 
             CheckBraces(context, anonymousObjectCreationExpression.OpenBraceToken, anonymousObjectCreationExpression.CloseBraceToken);
             CheckElements(context, anonymousObjectCreationExpression.Initializers);
+        }
+
+        private static void HandleCollectionExpression(SyntaxNodeAnalysisContext context)
+        {
+            var collectionExpression = (CollectionExpressionSyntaxWrapper)context.Node;
+
+            CheckBraces(context, collectionExpression.OpenBracketToken, collectionExpression.CloseBracketToken);
+            CheckElements(context, collectionExpression.Elements);
         }
 
         private static void HandleTupleType(SyntaxNodeAnalysisContext context)
