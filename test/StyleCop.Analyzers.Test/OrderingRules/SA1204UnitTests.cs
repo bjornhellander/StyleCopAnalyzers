@@ -453,9 +453,11 @@ public class TestClass1 { }
         /// <summary>
         /// Verifies that the analyzer will properly handle static constructors.
         /// </summary>
+        /// <param name="lineEnding">The line ending to use in the test code.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task TestStaticConstructorsAsync()
+        [Theory]
+        [MemberData(nameof(CommonData.EndOfLineSequences), MemberType = typeof(CommonData))]
+        public async Task TestStaticConstructorsAsync(string lineEnding)
         {
             var testCode = @"
 class MyClass1
@@ -479,7 +481,7 @@ class MyClass2
     {
     }
 }
-";
+".ReplaceLineEndings(lineEnding);
 
             var expected = Diagnostic().WithLocation(8, 12);
 
@@ -505,7 +507,7 @@ class MyClass2
     {
     }
 }
-";
+".ReplaceLineEndings(lineEnding);
 
             await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
         }

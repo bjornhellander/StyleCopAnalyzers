@@ -804,9 +804,11 @@ class MyClass
         /// <summary>
         /// Verifies that the analyzer will properly handle constructors.
         /// </summary>
+        /// <param name="lineEnding">The line ending to use in the test code.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task TestConstructorsAsync()
+        [Theory]
+        [MemberData(nameof(CommonData.EndOfLineSequences), MemberType = typeof(CommonData))]
+        public async Task TestConstructorsAsync(string lineEnding)
         {
             var testCode = @"
 class MyClass
@@ -819,7 +821,7 @@ class MyClass
     {
     }
 }
-";
+".ReplaceLineEndings(lineEnding);
 
             var expected = Diagnostic().WithLocation(8, 12).WithArguments("public", "private");
 
@@ -834,7 +836,7 @@ class MyClass
     {
     }
 }
-";
+".ReplaceLineEndings(lineEnding);
 
             await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
         }

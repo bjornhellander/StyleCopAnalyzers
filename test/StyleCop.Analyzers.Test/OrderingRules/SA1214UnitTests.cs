@@ -260,8 +260,9 @@ public struct Foo
             await VerifyCSharpFixAsync(testCode, expected, fixTestCode, CancellationToken.None).ConfigureAwait(false);
         }
 
-        [Fact]
-        public async Task ComplexExampleAsync()
+        [Theory]
+        [MemberData(nameof(CommonData.EndOfLineSequences), MemberType = typeof(CommonData))]
+        public async Task ComplexExampleAsync(string lineEnding)
         {
             var testCode = @"
 public class Foo
@@ -284,7 +285,7 @@ public class Foo
     }
 
     public static readonly int j = 0;
-}";
+}".ReplaceLineEndings(lineEnding);
 
             var expected = new[]
             {
@@ -315,7 +316,7 @@ public class Foo
     }
 
     public static readonly int j = 0;
-}";
+}".ReplaceLineEndings(lineEnding);
 
             await VerifyCSharpFixAsync(testCode, expected, fixTestCode, CancellationToken.None).ConfigureAwait(false);
         }

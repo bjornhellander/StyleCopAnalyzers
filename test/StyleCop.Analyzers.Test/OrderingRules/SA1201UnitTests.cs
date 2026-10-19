@@ -456,6 +456,35 @@ public enum OtherEnum { A }
             await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
         }
 
+        [Theory]
+        [MemberData(nameof(CommonData.EndOfLineSequences), MemberType = typeof(CommonData))]
+        public async Task TestTypeMemberOrderWrongOrderWithBlankLineAsync(string lineEnding)
+        {
+            string testCode = @"public class OuterType
+{
+    public void TestMethod()
+    {
+    }
+
+    {|#0:public event System.Action TestEvent;|}
+}
+".ReplaceLineEndings(lineEnding);
+
+            DiagnosticResult expected = Diagnostic().WithLocation(0).WithArguments("An event", "a method");
+
+            string fixedCode = @"public class OuterType
+{
+    public event System.Action TestEvent;
+
+    public void TestMethod()
+    {
+    }
+}
+".ReplaceLineEndings(lineEnding);
+
+            await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Verifies that reordering does not change conditional compilation boundaries.
         /// </summary>

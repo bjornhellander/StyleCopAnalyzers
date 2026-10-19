@@ -112,6 +112,29 @@ public class Foo
             await VerifyCSharpFixAsync(testCode, firstDiagnostic, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
         }
 
+        [Theory]
+        [MemberData(nameof(CommonData.EndOfLineSequences), MemberType = typeof(CommonData))]
+        public async Task TestClassViolationWithBlankLineAsync(string lineEnding)
+        {
+            var testCode = @"
+public class Foo
+{
+    private int Baz = 1;
+
+    private const int {|#0:Bar|} = 2;
+}".ReplaceLineEndings(lineEnding);
+            var firstDiagnostic = Diagnostic().WithLocation(0);
+
+            var fixedTestCode = @"
+public class Foo
+{
+    private const int Bar = 2;
+
+    private int Baz = 1;
+}".ReplaceLineEndings(lineEnding);
+            await VerifyCSharpFixAsync(testCode, firstDiagnostic, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
+        }
+
         [Fact]
         public async Task TestStructViolationAsync()
         {

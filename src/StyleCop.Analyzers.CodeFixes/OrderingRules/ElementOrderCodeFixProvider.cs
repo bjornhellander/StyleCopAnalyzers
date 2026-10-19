@@ -394,7 +394,9 @@ namespace StyleCop.Analyzers.OrderingRules
             if (!HasLeadingBlankLines(targetMember)
                 && HasLeadingBlankLines(member))
             {
-                memberToMove = memberToMove.WithTrailingTrivia(memberToMove.GetTrailingTrivia().Add(SyntaxFactory.CarriageReturnLineFeed));
+                // Reuse the blank line's own line ending to match the file.
+                var endOfLineTrivia = member.GetLeadingTrivia().First(trivia => trivia.IsKind(SyntaxKind.EndOfLineTrivia));
+                memberToMove = memberToMove.WithTrailingTrivia(memberToMove.GetTrailingTrivia().Add(endOfLineTrivia));
                 memberToMove = memberToMove.WithLeadingTrivia(GetLeadingTriviaWithoutLeadingBlankLines(memberToMove));
             }
 
