@@ -9,6 +9,7 @@ namespace StyleCop.Analyzers.Test.LayoutRules
     using Microsoft.CodeAnalysis;
     using Microsoft.CodeAnalysis.Testing;
     using StyleCop.Analyzers.LayoutRules;
+    using StyleCop.Analyzers.Test.Helpers;
     using Xunit;
     using static StyleCop.Analyzers.Test.Verifiers.StyleCopCodeFixVerifier<
         StyleCop.Analyzers.LayoutRules.SA1501StatementMustNotBeOnASingleLine,
@@ -470,9 +471,11 @@ public class Foo
         /// <summary>
         /// Verifies that the code fix provider will correctly expand the block to a multiline statement, when it starts on the same line as the parent.
         /// </summary>
+        /// <param name="lineEnding">The line ending to use in the test code.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task TestCodeFixProviderCorrectlyExpandsBlockWithParentOnSameLineAsync()
+        [Theory]
+        [MemberData(nameof(CommonData.EndOfLineSequences), MemberType = typeof(CommonData))]
+        public async Task TestCodeFixProviderCorrectlyExpandsBlockWithParentOnSameLineAsync(string lineEnding)
         {
             string testCode = @"using System.Diagnostics;
 public class Foo
@@ -481,7 +484,7 @@ public class Foo
     {
         lock (this) { Debug.Assert(true); }
     }
-}";
+}".ReplaceLineEndings(lineEnding);
             string fixedTestCode = @"using System.Diagnostics;
 public class Foo
 {
@@ -492,7 +495,7 @@ public class Foo
             Debug.Assert(true);
         }
     }
-}";
+}".ReplaceLineEndings(lineEnding);
 
             var expected = Diagnostic().WithLocation(6, 21);
             await VerifyCSharpFixAsync(testCode, expected, fixedTestCode, CancellationToken.None).ConfigureAwait(false);
@@ -1092,9 +1095,11 @@ public class TypeName
         /// <summary>
         /// Verifies that the code fix provider will work properly for an if .. else statement.
         /// </summary>
+        /// <param name="lineEnding">The line ending to use in the test code.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task TestNoSA1503CodeFixProviderForIfElseStatementAsync()
+        [Theory]
+        [MemberData(nameof(CommonData.EndOfLineSequences), MemberType = typeof(CommonData))]
+        public async Task TestNoSA1503CodeFixProviderForIfElseStatementAsync(string lineEnding)
         {
             var testCode = @"using System.Diagnostics;
 public class TypeName
@@ -1103,7 +1108,7 @@ public class TypeName
     {
         if (i == 0) Debug.Assert(true); else Debug.Assert(false);
     }
-}";
+}".ReplaceLineEndings(lineEnding);
 
             var fixedTestCode = @"using System.Diagnostics;
 public class TypeName
@@ -1115,7 +1120,7 @@ public class TypeName
         else
             Debug.Assert(false);
     }
-}";
+}".ReplaceLineEndings(lineEnding);
 
             await new CSharpTest
             {
