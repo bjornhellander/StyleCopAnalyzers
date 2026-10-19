@@ -7,6 +7,7 @@ namespace StyleCop.Analyzers.Test.LayoutRules
     using System.Threading.Tasks;
     using Microsoft.CodeAnalysis.Testing;
     using StyleCop.Analyzers.LayoutRules;
+    using StyleCop.Analyzers.Test.Helpers;
     using Xunit;
     using static StyleCop.Analyzers.Test.Verifiers.StyleCopCodeFixVerifier<
         StyleCop.Analyzers.LayoutRules.SA1500BracesForMultiLineStatementsMustNotShareLine,
@@ -57,9 +58,11 @@ public class Foo
         /// <summary>
         /// Verifies diagnostics and codefixes for all invalid blocks.
         /// </summary>
+        /// <param name="lineEnding">The line ending to use in the test code.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task TestBlockInvalidAsync()
+        [Theory]
+        [MemberData(nameof(CommonData.EndOfLineSequences), MemberType = typeof(CommonData))]
+        public async Task TestBlockInvalidAsync(string lineEnding)
         {
             var testCode = @"using System.Diagnostics;
 
@@ -75,7 +78,7 @@ public class Foo
         {
             Debug.Indent(); }
     }
-}";
+}".ReplaceLineEndings(lineEnding);
 
             var fixedTestCode = @"using System.Diagnostics;
 
@@ -93,7 +96,7 @@ public class Foo
             Debug.Indent();
         }
     }
-}";
+}".ReplaceLineEndings(lineEnding);
 
             DiagnosticResult[] expectedDiagnostics =
             {
