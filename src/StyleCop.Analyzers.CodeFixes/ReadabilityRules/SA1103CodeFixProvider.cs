@@ -113,6 +113,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
         private static async Task<Document> GetTransformedDocumentForMultipleLinesAsync(Document document, Diagnostic diagnostic, CancellationToken cancellationToken)
         {
             var syntaxRoot = await document.GetSyntaxRootAsync(cancellationToken).ConfigureAwait(false);
+            var text = await document.GetTextAsync(cancellationToken).ConfigureAwait(false);
             var queryExpression = (QueryExpressionSyntax)syntaxRoot.FindNode(diagnostic.Location.SourceSpan).Parent;
             var replaceMap = new Dictionary<SyntaxToken, SyntaxToken>();
 
@@ -120,6 +121,7 @@ namespace StyleCop.Analyzers.ReadabilityRules
 
             var settings = SettingsHelper.GetStyleCopSettingsInCodeFix(document.Project.AnalyzerOptions, syntaxRoot.SyntaxTree, cancellationToken);
             var indentationTrivia = QueryIndentationHelpers.GetQueryIndentationTrivia(settings.Indentation, queryExpression);
+            var options = document.Project.Solution.Workspace.Options;
 
             for (var i = 1; i < nodeList.Length; i++)
             {
@@ -129,7 +131,8 @@ namespace StyleCop.Analyzers.ReadabilityRules
                 if (precedingToken.GetLine() == token.GetLine())
                 {
                     var triviaList = precedingToken.TrailingTrivia.AddRange(token.LeadingTrivia);
-                    var processedTriviaList = triviaList.WithoutTrailingWhitespace().Add(SyntaxFactory.CarriageReturnLineFeed);
+                    var endOfLineTrivia = FormattingHelper.GetEndOfLineForCodeFix(token, text, options);
+                    var processedTriviaList = triviaList.WithoutTrailingWhitespace().Add(endOfLineTrivia);
 
                     replaceMap.Add(precedingToken, precedingToken.WithTrailingTrivia(processedTriviaList));
                     replaceMap.Add(token, token.WithLeadingTrivia(indentationTrivia));

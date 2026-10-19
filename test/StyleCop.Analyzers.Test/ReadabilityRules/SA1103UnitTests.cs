@@ -73,9 +73,11 @@ namespace StyleCop.Analyzers.Test.ReadabilityRules
         /// <summary>
         /// Verifies that a group query expression produces the expected results.
         /// </summary>
+        /// <param name="lineEnding">The line ending to use in the test code.</param>
         /// <returns>A <see cref="Task"/> representing the asynchronous unit test.</returns>
-        [Fact]
-        public async Task TestGroupQueryExpressionAsync()
+        [Theory]
+        [MemberData(nameof(CommonData.EndOfLineSequences), MemberType = typeof(CommonData))]
+        public async Task TestGroupQueryExpressionAsync(string lineEnding)
         {
             var testCode = @"namespace TestNamespace
 {
@@ -92,7 +94,7 @@ namespace StyleCop.Analyzers.Test.ReadabilityRules
         }
     }
 }
-";
+".ReplaceLineEndings(lineEnding);
 
             var fixedTestCode = @"namespace TestNamespace
 {
@@ -110,7 +112,7 @@ namespace StyleCop.Analyzers.Test.ReadabilityRules
         }
     }
 }
-";
+".ReplaceLineEndings(lineEnding);
 
             DiagnosticResult[] expectedDiagnostics =
             {
