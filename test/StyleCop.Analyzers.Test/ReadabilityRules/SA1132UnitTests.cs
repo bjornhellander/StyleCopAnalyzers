@@ -163,9 +163,10 @@ class TestAttribute : System.Attribute
             await VerifyCSharpFixAsync(testCode, expected, fixedCode, CancellationToken.None).ConfigureAwait(false);
         }
 
-        [Fact]
+        [Theory]
+        [MemberData(nameof(CommonData.EndOfLineSequences), MemberType = typeof(CommonData))]
         [WorkItem(2594, "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/issues/2594")]
-        public async Task VerifyThatDirectiveTriviaAreHandledCorrectlyAsync()
+        public async Task VerifyThatDirectiveTriviaAreHandledCorrectlyAsync(string lineEnding)
         {
             var testCode = @"
 namespace StyleCopDemo
@@ -191,7 +192,7 @@ namespace StyleCopDemo
 
         #endregion
     }
-}";
+}".ReplaceLineEndings(lineEnding);
 
             var fixedCode = @"
 namespace StyleCopDemo
@@ -221,7 +222,7 @@ namespace StyleCopDemo
 
         #endregion
     }
-}";
+}".ReplaceLineEndings(lineEnding);
 
             DiagnosticResult[] expected =
             {
